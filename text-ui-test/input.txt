@@ -1,1 +1,1 @@
-James Gosling
+add /n Pikachu /q 1 /p 5.50
