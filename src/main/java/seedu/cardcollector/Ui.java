@@ -127,7 +127,8 @@ public class Ui {
                 .limit(recordsLimit)
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        assert sortedCards.size() <= recordsLimit : "Number of cards displayed should not be more than the recordsLimit";
+        assert sortedCards.size() <= recordsLimit :
+                "Number of cards displayed should not be more than the recordsLimit";
 
         if (sortedCards.isEmpty()) {
             System.out.printf(FORMAT_HISTORY_ADDED_NO_RECORD);
@@ -157,7 +158,8 @@ public class Ui {
                 .limit(recordsLimit)
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        assert sortedCards.size() <= recordsLimit : "Number of cards displayed should not be more than the recordsLimit";
+        assert sortedCards.size() <= recordsLimit :
+                "Number of cards displayed should not be more than the recordsLimit";
 
         if (sortedCards.isEmpty()) {
             System.out.printf(FORMAT_HISTORY_MODIFIED_NO_RECORD);
@@ -187,7 +189,8 @@ public class Ui {
                 .limit(recordsLimit)
                 .collect(Collectors.toCollection(ArrayList::new));
 
-        assert sortedCards.size() <= recordsLimit : "Number of cards displayed should not be more than the recordsLimit";
+        assert sortedCards.size() <= recordsLimit :
+                "Number of cards displayed should not be more than the recordsLimit";
 
         if (sortedCards.isEmpty()) {
             System.out.printf(FORMAT_HISTORY_REMOVED_NO_RECORD);
