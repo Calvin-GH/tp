@@ -26,10 +26,11 @@ public class CardCollector {
             switch (command) {
             case "add":
                 if (parts.length < 2) {
+                    System.out.println("Usage: add /n [name] /q [quantity] /p [price]");
                     System.out.println("Missing details for add.");
                     break;
                 }
-                handleParsing(parts[1]);
+                handleAdd(parts[1]);
                 break;
 
             case "find":
@@ -74,15 +75,22 @@ public class CardCollector {
         }
     }
 
-    private void handleParsing(String arguments) {
+    private void handleAdd(String arguments) {
         String name = arguments.split("/n")[1].split("/q|/p")[0].trim();
         int quantity = Integer.parseInt(arguments.split("/q")[1].split("/n|/p")[0].trim());
         float price = Float.parseFloat(arguments.split("/p")[1].split("/n|/q")[0].trim());
 
-        Instant currentInstant = Instant.now();
+        assert !name.isEmpty() : "Card name should not be empty";
+        assert quantity >= 0 : "Card quantity should not be negative";
+        assert price >= 0.0f : "Card price should not be negative";
 
+        Instant currentInstant = Instant.now();
         Card newCard = new Card(name, quantity, price, currentInstant, currentInstant);
+
+        int sizeBefore = inventory.getSize();
         inventory.addCard(newCard);
+        assert inventory.getSize() == sizeBefore + 1 : "Inventory size should increase by 1 after adding";
+
         ui.printAdded(inventory);
     }
 
@@ -95,11 +103,11 @@ public class CardCollector {
             if (arguments.contains("/n")) {
                 name = arguments.split("/n")[1].split("/q|/p")[0].trim();
             }
-            if (arguments.contains("/p")) {
-                price = Float.parseFloat(arguments.split("/p")[1].split("/n|/q")[0].trim());
-            }
             if (arguments.contains("/q")) {
                 quantity = Integer.parseInt(arguments.split("/q")[1].split("/n|/p")[0].trim());
+            }
+            if (arguments.contains("/p")) {
+                price = Float.parseFloat(arguments.split("/p")[1].split("/n|/q")[0].trim());
             }
         } catch (NumberFormatException e) {
             System.out.println("Invalid number format for price or quantity.");
