@@ -90,4 +90,28 @@ public class CardsListTest {
         
         assertEquals(0, results.size());
     }
+
+    @Test
+    public void getSortedCards_byPrice_success() {
+        CardsList cardsList = new CardsList();
+
+        Card cheapCard = new Card("Cheap card", 1, 2.00f);
+        Card expensiveCard = new Card("Expensive card", 1, 888.00f);
+        Card moderateCard = new Card("Moderate card", 1, 50.00f);
+
+        cardsList.addCard(cheapCard);
+        cardsList.addCard(expensiveCard);
+        cardsList.addCard(moderateCard);
+
+        ArrayList<Card> results_descending = cardsList.getSortedCards(CardSortCriteria.PRICE, false, -1, Integer.MAX_VALUE);
+        assertEquals(expensiveCard, results_descending.get(0));
+        assertEquals(moderateCard, results_descending.get(1));
+        assertEquals(cheapCard, results_descending.get(2));
+
+
+        ArrayList<Card> results_ascending = cardsList.getSortedCards(CardSortCriteria.PRICE, true, -1, Integer.MAX_VALUE);
+        assertEquals(expensiveCard, results_ascending.get(2));
+        assertEquals(moderateCard, results_ascending.get(1));
+        assertEquals(cheapCard, results_ascending.get(0));
+    }
 }
