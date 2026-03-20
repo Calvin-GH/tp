@@ -1,5 +1,8 @@
 package seedu.cardcollector;
 
+import seedu.cardcollector.commands.Command;
+import seedu.cardcollector.commands.HistoryCommand;
+
 import java.util.ArrayList;
 
 public class CardCollector {
@@ -18,9 +21,9 @@ public class CardCollector {
         while (isRunning) {
             String input = ui.readInput();
             String[] parts = input.split(" ", 2);
-            String command = parts[0].toLowerCase();
+            String commandString = parts[0].toLowerCase();
 
-            switch (command) {
+            switch (commandString) {
             case "add":
                 if (parts.length < 2) {
                     System.out.println("Usage: add /n [name] /q [quantity] /p [price]");
@@ -57,12 +60,15 @@ public class CardCollector {
 
             case "history":
                 if (parts.length < 2) {
-                    System.out.println("Usage: history [added|modified|removed]");
+                    System.out.println("Usage: history [added | modified | removed] [NUMBER | all]");
                     System.out.println("Example: history added");
                     System.out.println("The argument must be provided.");
                     break;
                 }
-                handleHistory(parts[1]);
+                Command command = handleHistory(parts[1]);
+                if (command != null) {
+                    command.execute(ui, inventory);
+                }
                 break;
 
             case "bye":
@@ -184,7 +190,7 @@ public class CardCollector {
      *
      * @param arguments The command argument that determines which history type to display.
      */
-    private void handleHistory(String arguments) {
+    private Command handleHistory(String arguments) {
         String lowercaseArguments = arguments.trim().toLowerCase();
         String[] split = lowercaseArguments.split("\\s+", 2);  // Split by one or more spaces
 
@@ -199,7 +205,7 @@ public class CardCollector {
 
                 if (i < 1) {
                     System.out.println("History count must be at least 1.");
-                    return;
+                    return null;
                 }
 
                 maxDisplayCount = i;
@@ -210,14 +216,15 @@ public class CardCollector {
             }
         }
 
-        if ("added".startsWith(historyType)) {
-            ui.printAddedHistory(inventory, maxDisplayCount);
-        } else if ("modified".startsWith(historyType)) {
-            ui.printModifiedHistory(inventory, maxDisplayCount);
-        } else if ("removed".startsWith(historyType)) {
-            ui.printRemovedHistory(inventory, maxDisplayCount);
+        if (CardHistoryType.ADDED.getName().startsWith(historyType)) {
+            return new HistoryCommand(CardHistoryType.ADDED, maxDisplayCount);
+        } else if (CardHistoryType.MODIFIED.getName().startsWith(historyType)) {
+            return new HistoryCommand(CardHistoryType.MODIFIED, maxDisplayCount);
+        } else if (CardHistoryType.REMOVED.getName().startsWith(historyType)) {
+            return new HistoryCommand(CardHistoryType.REMOVED, maxDisplayCount);
         } else {
             System.out.println("Unknown argument!");
+            return null;
         }
     }
 

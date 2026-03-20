@@ -151,7 +151,7 @@ public class CardsList {
                     Comparator.nullsLast(Instant::compareTo));
         }
         default -> {
-            assert false : "Unhandled criteria";
+            assert false : "Invalid criteria";
         }
         }
         return null;
@@ -170,7 +170,7 @@ public class CardsList {
 
         Comparator<Card> comparator = getSortComparator(criteria);
 
-        assert comparator != null;
+        assert comparator != null : "No available comparator for criteria";
 
         // Apply ascending/descending order
         if (!isAscending) {
