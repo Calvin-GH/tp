@@ -67,7 +67,7 @@ public class ParserTest {
         assertInstanceOf(HistoryCommand.class, command4);
 
         Command command5 = parser.parse("history modified 5");
-        assertInstanceOf(HistoryCommand.class, command4);
+        assertInstanceOf(HistoryCommand.class, command5);
     }
 
 }
