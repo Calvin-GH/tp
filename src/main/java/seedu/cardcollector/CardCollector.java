@@ -33,7 +33,8 @@ public class CardCollector {
             } catch (ParseInvalidArgumentException e) {
                 ui.printInvalidArgumentWarning(e.getMessage(), e.getUsage());
             } catch (ParseUnknownCommandException e) {
-                ui.printUnknownCommandWarning(e.getMessage());
+                // TODO uncomment this line once the parser has been migrated
+                // ui.printUnknownCommandWarning(e.getMessage());
             }
 
             String[] parts = input.split(" ", 2);
