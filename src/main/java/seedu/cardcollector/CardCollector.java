@@ -42,15 +42,6 @@ public class CardCollector {
 
             // TODO Please move into the parser, thanks!
             switch (commandString) {
-            case "add":
-                if (parts.length < 2) {
-                    System.out.println("Usage: add /n [name] /q [quantity] /p [price]");
-                    System.out.println("Missing details for add.");
-                    break;
-                }
-                handleAdd(parts[1]);
-                break;
-
             case "find":
                 if (parts.length < 2) {
                     System.out.println("Usage: find [/n NAME] [/p PRICE] [/q QUANTITY]");
@@ -58,14 +49,6 @@ public class CardCollector {
                     break;
                 }
                 handleFind(parts[1]);
-                break;
-
-            case "remove":
-                if (parts.length < 2) {
-                    System.out.println("Missing index for remove.");
-                    break;
-                }
-                handleRemove(parts[1]);
                 break;
 
             case "list":
@@ -85,28 +68,6 @@ public class CardCollector {
                 System.out.println("DEPRECATED Unknown command!");
             }
         }
-    }
-
-    private void handleAdd(String arguments) {
-        String name = arguments.split("/n")[1].split("/q|/p")[0].trim();
-        int quantity = Integer.parseInt(arguments.split("/q")[1].split("/n|/p")[0].trim());
-        float price = Float.parseFloat(arguments.split("/p")[1].split("/n|/q")[0].trim());
-
-        assert !name.isEmpty() : "Card name should not be empty";
-        assert quantity >= 0 : "Card quantity should not be negative";
-        assert price >= 0.0f : "Card price should not be negative";
-
-        Card newCard = new Card.Builder()
-                .name(name)
-                .price(price)
-                .quantity(quantity)
-                .build();
-
-        int sizeBefore = inventory.getSize();
-        inventory.addCard(newCard);
-        assert inventory.getSize() == sizeBefore + 1 : "Inventory size should increase by 1 after adding";
-
-        ui.printAdded(inventory);
     }
 
     private void handleFind(String arguments) {
@@ -144,48 +105,6 @@ public class CardCollector {
 
         ui.printFound(results);
     }
-
-    private void handleRemove(String argument) {
-        argument = argument.trim();
-        assert inventory.getSize() >= 0 : "Inventory size cannot be negative";
-
-        try {
-            int index = Integer.parseInt(argument) - 1;
-            int sizeBefore = inventory.getSize();
-
-            if (index < 0 || index >= inventory.getSize()) {
-                System.out.println("Invalid card index.");
-                assert inventory.getSize() == sizeBefore;
-                return;
-            }
-
-            inventory.removeCard(index);
-
-            assert inventory.getSize() == sizeBefore - 1
-                    : "Inventory size should decrease after removing by index";
-
-            ui.printRemoved(inventory, index);
-
-        } catch (NumberFormatException e) {
-            int sizeBefore = inventory.getSize();
-
-            boolean removed = inventory.removeCardByName(argument);
-
-            if (removed) {
-                assert inventory.getSize() == sizeBefore - 1
-                        : "Inventory size should decrease after removing by name";
-
-                System.out.println("Card \"" + argument + "\" removed successfully.");
-                ui.printList(inventory);
-            } else {
-                assert inventory.getSize() == sizeBefore
-                        : "Inventory size should remain unchanged";
-
-                System.out.println("Card with name \"" + argument + "\" not found.");
-            }
-        }
-    }
-
 
     public static void main(String[] args) {
         new CardCollector().run();

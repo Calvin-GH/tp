@@ -1,15 +1,23 @@
 package seedu.cardcollector.parsing;
 
 import seedu.cardcollector.CardHistoryType;
+import seedu.cardcollector.command.AddCommand;
+import seedu.cardcollector.command.RemoveCardByNameCommand;
+import seedu.cardcollector.command.RemoveCardByIndexCommand;
 import seedu.cardcollector.command.Command;
 import seedu.cardcollector.command.HistoryCommand;
 import seedu.cardcollector.exception.ParseInvalidArgumentException;
 import seedu.cardcollector.exception.ParseUnknownCommandException;
 
+import java.util.UUID;
+
 public class Parser {
     private static final String REGEX_WHITESPACES = "\\s+";
 
     private static final String KEYWORD_HISTORY_COMMAND = "history";
+    private static final String KEYWORD_ADD_COMMAND = "add";
+    private static final String KEYWORD_REMOVE_INDEX_COMMAND = "removeindex";
+    private static final String KEYWORD_REMOVE_NAME_COMMAND = "removename";
 
     private static final String[] USAGE_HISTORY_COMMAND = {
         "history [added | modified | removed] [NUMBER | all]",
@@ -27,6 +35,15 @@ public class Parser {
         switch (commandKeyword) {
         case KEYWORD_HISTORY_COMMAND -> {
             return handleHistory(arguments);
+        }
+        case KEYWORD_ADD_COMMAND -> {
+            return handleAdd(arguments);
+        }
+        case KEYWORD_REMOVE_INDEX_COMMAND -> {
+            return handleRemoveByIndex(arguments);
+        }
+        case KEYWORD_REMOVE_NAME_COMMAND -> {
+            return handleRemoveByName(arguments);
         }
         default -> throw new ParseUnknownCommandException(commandKeyword);
         }
@@ -57,6 +74,42 @@ public class Parser {
         }
 
         return maxDisplayCount;
+    }
+
+    private Command handleAdd(String args) throws ParseInvalidArgumentException{
+        try {
+            String name = args.split("/n")[1].split("/q|/p|/id")[0].trim();
+            int quantity = Integer.parseInt(args.split("/q")[1].split("/n|/p|/id")[0].trim());
+            float price = Float.parseFloat(args.split("/p")[1].split("/n|/q|/id")[0].trim());
+
+            UUID uid = null;
+            if (args.contains("/id")) {
+                String uidString = args.split("/id")[1].split("/n|/q|/p")[0].trim();
+                uid = UUID.fromString(uidString);
+            }
+            return new AddCommand(uid,name,quantity,price);
+        } catch (Exception e) {
+            throw new ParseInvalidArgumentException("Invalid add format",
+                    new String[] {"add /n NAME /q QTY /p PRICE [/id UUID]"});
+        }
+    }
+
+    private Command handleRemoveByIndex(String args) throws ParseInvalidArgumentException {
+        try {
+            int index = Integer.parseInt(args.trim()) - 1;
+            return new RemoveCardByIndexCommand(index);
+        } catch (NumberFormatException e) {
+            throw new ParseInvalidArgumentException("Index must be a valid integer",
+                    new String[]{"removeindex INDEX"});
+        }
+    }
+
+    private Command handleRemoveByName(String args) throws ParseInvalidArgumentException {
+        if (args.isBlank()) {
+            throw new ParseInvalidArgumentException("Name must be provided",
+                    new String[]{"removename NAME"});
+        }
+        return new RemoveCardByNameCommand(args.trim());
     }
 
     /**

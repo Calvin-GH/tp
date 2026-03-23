@@ -29,7 +29,7 @@ public class CardsList {
         addedCards.add(card);
     }
 
-    public void removeCard(int index) {
+    public void removeCardByIndex(int index) {
         assert cards != null : "Cards list should be initialized";
 
         int sizeBefore = cards.size();
