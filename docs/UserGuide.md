@@ -52,7 +52,7 @@ Displays all the cards currently in your inventory.
 
 ### Viewing history: `history`
 Displays a chronological history of your cards based on when they were added, modified, or removed.
-**Format:** `history [added | modified | removed]`
+**Format:** `history [added | modified | removed] [NUMBER | all]`
 
 **Examples:**
 * `history added` shows the history of cards sorted by the date they were added.

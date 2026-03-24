@@ -1,0 +1,54 @@
+@startuml
+!include Style.puml
+
+participant ":CardCollector" as CardCollector CARDCOLLECTOR_COLOR_PRIMARY
+participant ":Parser" as Parser PARSER_COLOR_PRIMARY
+participant ":DeleteCommand" as DeleteCommand COMMAND_COLOR_PRIMARY
+participant ":Ui" as Ui UI_COLOR_PRIMARY
+
+create Parser
+CardCollector -> Parser:
+activate Parser
+CardCollector -> Parser : parse("history added all")
+
+create DeleteCommand
+Parser -> DeleteCommand
+activate DeleteCommand
+DeleteCommand --> Parser : command
+deactivate DeleteCommand
+
+Parser --> CardCollector : command
+deactivate Parser
+CardCollector -[hidden]-> Parser
+destroy Parser
+CardCollector -[hidden]-> Parser
+
+'We are done with the parser, lets execute the command'
+CardCollector -> DeleteCommand : execute()
+activate DeleteCommand
+
+alt #fafafa CardHistoryType.ADDED
+    DeleteCommand -> Ui: printAddedHistory(...)
+    activate Ui
+    Ui --> DeleteCommand
+    deactivate Ui
+else CardHistoryType.MODIFIED
+    DeleteCommand -> Ui: printModifiedHistory(...)
+    activate Ui
+    Ui --> DeleteCommand
+    deactivate Ui
+else CardHistoryType.Removed
+    DeleteCommand -> Ui: printRemovedHistory(...)
+    activate Ui
+    Ui --> DeleteCommand
+    deactivate Ui
+end
+
+DeleteCommand --> CardCollector : commandResult
+deactivate DeleteCommand
+CardCollector -[hidden]-> Parser
+destroy DeleteCommand
+@enduml
+
+
+@enduml

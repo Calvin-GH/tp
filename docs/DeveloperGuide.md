@@ -1,7 +1,8 @@
 # Developer Guide
 
 ## Acknowledgements
-
+- For the PlantUML styling, we adapted from [addressbook-level3](https://github.com/se-edu/addressbook-level3/blob/master/docs/diagrams/style.puml).
+- 
 {list here sources of all reused/adapted ideas, code, documentation, and third-party libraries -- include links to the original source as well}
 
 ## Design & implementation
@@ -13,6 +14,9 @@ The architecture of CardCollector consists of three main components:
 2. **`CardCollector`**: The main logic controller that parses user input and executes the appropriate commands.
 3. **`CardsList` & `Card`**: The data structures storing the inventory and individual card details, including timestamp history.
 
+
+To model the interactions that occur when the user issues the command `history added all`, below is a *Sequence Diagram* to illustrate it.
+<img src="images/HistorySequenceDiagram.png" width="414" />
 
 ## Product scope
 ### Target user profile
