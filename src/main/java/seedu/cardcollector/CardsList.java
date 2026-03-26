@@ -27,7 +27,8 @@ public class CardsList {
         Instant currentInstant = Instant.now();
 
         for (Card existingCard : cards) {
-            if (existingCard.getName().equalsIgnoreCase(newCard.getName())){
+            if (existingCard.getName().equalsIgnoreCase(newCard.getName()) &&
+                existingCard.getPrice() == newCard.getPrice()){
                 int updatedQuantity = existingCard.getQuantity() + newCard.getQuantity();
                 existingCard.setQuantity(updatedQuantity);
                 existingCard.setLastModified(currentInstant);
