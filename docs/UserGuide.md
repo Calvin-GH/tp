@@ -44,6 +44,18 @@ Compares two cards from the same list.
 `compare 1 3`
 `wishlist compare 2 4`
 
+### Reordering the list: `reorder`
+
+Permanently reorders the stored cards in your inventory or wishlist by the chosen criteria.
+
+**Format:** `reorder CRITERIA [asc|desc]`
+
+- CRITERIA = `name` | `price` | `quantity` | `lastadded` | `lastmodified`
+
+**Examples:**
+`reorder price desc`
+`wishlist reorder name asc`
+
 ### Listing cards: `list`
 
 Displays all cards in the current list.
@@ -97,6 +109,15 @@ Prefix any list-based command with `wishlist ` to run it on the wishlist instead
 `wishlist edit 1 /n Shiny Charizard`
 `wishlist removeindex 2`
 
+### Acquiring a card from wishlist: `wishlist acquired`
+
+Moves a card from the wishlist to your main inventory (and removes it from the wishlist).
+
+**Format:** `wishlist acquired INDEX`
+
+**Example:**
+`wishlist acquired 3`
+
 ### Downloading a storage snapshot: `download`
 
 Exports the current full app state, including inventory and wishlist, to a file path of your choice.
@@ -135,16 +156,18 @@ Exits the application.
 
 ## Command Summary
 
-- `add /n NAME /q QTY /p PRICE`
-- `edit INDEX [/n NAME] [/q QTY] [/p PRICE]`
-- `list`
-- `find [/n NAME] [/p PRICE] [/q QUANTITY]`
-- `compare INDEX1 INDEX2`
-- `removeindex INDEX`
-- `removename NAME`
-- `history [added | modified | removed] [NUMBER | all]`
-- `download /f FILE_PATH`
-- `upload /f FILE_PATH`
-- `undoupload`
-- `wishlist <list command>`
-- `bye`
+* add /n NAME /q QTY /p PRICE
+* edit INDEX [/n NAME] [/q QTY] [/p PRICE]
+* compare INDEX1 INDEX2
+* reorder CRITERIA [asc|desc]
+* removeindex INDEX
+* removename NAME
+* history [added | modified | removed] [NUMBER | all]
+* wishlist acquired INDEX
+* download /f FILE_PATH
+* upload /f FILE_PATH
+* undoupload
+* wishlist <list command>
+* list
+* find [/n NAME] [/p PRICE] [/q QUANTITY]
+* bye

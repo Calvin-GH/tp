@@ -291,4 +291,28 @@ public class CardsList {
             card.setLastModified(currentInstant);
         }
     }
+
+    /**
+     * Permanently reorders the main cards list (inventory or wishlist) in-place
+     * by the given criteria. This changes storage order (unlike the view-only
+     * getSortedCards methods).
+     */
+    public void reorder(CardSortCriteria criteria, boolean isAscending) {
+        assert cards != null : "Cards list should be initialized before reordering";
+
+        if (cards.isEmpty()) {
+            return;
+        }
+
+        Comparator<Card> comparator = getSortComparator(criteria);
+        assert comparator != null : "No available comparator for criteria";
+
+        if (!isAscending) {
+            comparator = comparator.reversed();
+        }
+
+        cards.sort(comparator);
+
+        assert cards.size() > 0 : "List should not be empty if it wasn't before reorder";
+    }
 }
