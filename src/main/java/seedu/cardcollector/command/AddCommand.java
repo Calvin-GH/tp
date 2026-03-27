@@ -1,8 +1,6 @@
 package seedu.cardcollector.command;
 
-import seedu.cardcollector.CardsList;
 import seedu.cardcollector.Card;
-import seedu.cardcollector.Ui;
 import java.util.UUID;
 
 public class AddCommand extends Command {
@@ -19,7 +17,8 @@ public class AddCommand extends Command {
     }
 
     @Override
-    public CommandResult execute(Ui ui, CardsList inventory) {
+    public CommandResult execute(CommandContext context) {
+        var inventory = context.getTargetList();
         Card newCard = new Card.Builder()
                 .uid(uid)
                 .name(name)
@@ -28,7 +27,7 @@ public class AddCommand extends Command {
                 .build();
 
         inventory.addCard(newCard);
-        ui.printAdded(inventory);
+        context.getUi().printAdded(inventory);
         return new CommandResult(false);
     }
 }

@@ -1,8 +1,5 @@
 package seedu.cardcollector.command;
 
-import seedu.cardcollector.CardsList;
-import seedu.cardcollector.Ui;
-
 public class RemoveCardByNameCommand extends Command {
     private final String targetName;
 
@@ -11,7 +8,9 @@ public class RemoveCardByNameCommand extends Command {
     }
 
     @Override
-    public CommandResult execute(Ui ui, CardsList inventory) {
+    public CommandResult execute(CommandContext context) {
+        var ui = context.getUi();
+        var inventory = context.getTargetList();
         boolean removed = inventory.removeCardByName(targetName);
 
         if (removed) {

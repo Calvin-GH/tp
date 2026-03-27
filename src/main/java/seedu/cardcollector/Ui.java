@@ -1,5 +1,6 @@
 package seedu.cardcollector;
 
+import java.nio.file.Path;
 import java.time.format.DateTimeFormatter;
 import java.time.Instant;
 import java.time.ZoneId;
@@ -167,6 +168,56 @@ public class Ui {
                 System.out.println((i + 1) + ". " + results.get(i));
             }
         }
+        printBorder();
+    }
+
+    public void printDownloadSuccess(Path path) {
+        printBorder();
+        System.out.println("Saved current CardCollector data to: " + path);
+        printBorder();
+    }
+
+    public void printUploadSuccess(Path sourcePath, Path activePath) {
+        printBorder();
+        System.out.println("Loaded CardCollector data from: " + sourcePath);
+        System.out.println("Active storage file remains: " + activePath);
+        System.out.println("Run \"undoupload\" to restore the previous session data.");
+        printBorder();
+    }
+
+    public boolean confirmUpload(Path sourcePath, Path activePath) {
+        printBorder();
+        System.out.println("Warning: upload will replace your current inventory and wishlist.");
+        System.out.println("Imported file: " + sourcePath);
+        System.out.println("Your active save file will remain: " + activePath);
+        System.out.println("Type YES to continue or anything else to cancel.");
+        printBorder();
+        return "YES".equals(readInput());
+    }
+
+    public void printUploadCancelled() {
+        printBorder();
+        System.out.println("Upload cancelled. Current data was not changed.");
+        printBorder();
+    }
+
+    public void printUndoUploadSuccess(Path activePath) {
+        printBorder();
+        System.out.println("Restored the data from before the last upload.");
+        System.out.println("Active storage file: " + activePath);
+        printBorder();
+    }
+
+    public void printNoUploadUndoAvailable() {
+        printBorder();
+        System.out.println("No upload action is available to undo.");
+        printBorder();
+    }
+
+    public void printStorageTransferError(String action, Path path, String errorMessage) {
+        printBorder();
+        System.out.println("Failed to " + action + " storage file: " + path);
+        System.out.println(errorMessage);
         printBorder();
     }
 

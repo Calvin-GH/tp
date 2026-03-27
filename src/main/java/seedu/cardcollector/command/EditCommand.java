@@ -1,8 +1,5 @@
 package seedu.cardcollector.command;
 
-import seedu.cardcollector.CardsList;
-import seedu.cardcollector.Ui;
-
 public class EditCommand extends Command {
 
     private final int targetIndex;
@@ -18,7 +15,9 @@ public class EditCommand extends Command {
     }
 
     @Override
-    public CommandResult execute(Ui ui, CardsList inventory) {
+    public CommandResult execute(CommandContext context) {
+        var ui = context.getUi();
+        var inventory = context.getTargetList();
         if (targetIndex < 0 || targetIndex >= inventory.getSize()) {
             ui.printInvalidIndex();
             return new CommandResult(false);

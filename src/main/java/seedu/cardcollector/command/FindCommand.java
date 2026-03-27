@@ -1,8 +1,6 @@
 package seedu.cardcollector.command;
 
 import seedu.cardcollector.Card;
-import seedu.cardcollector.CardsList;
-import seedu.cardcollector.Ui;
 
 import java.util.ArrayList;
 
@@ -18,7 +16,9 @@ public class FindCommand extends Command {
     }
 
     @Override
-    public CommandResult execute(Ui ui, CardsList inventory) {
+    public CommandResult execute(CommandContext context) {
+        var ui = context.getUi();
+        var inventory = context.getTargetList();
         ArrayList<Card> results = inventory.findCards(name, price, quantity);
         ui.printFound(results);
         return new CommandResult(false);

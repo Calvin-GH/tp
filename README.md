@@ -1,66 +1,57 @@
-# CardCollector project template
+# CardCollector
 
-This is a project template for a greenfield Java project. Given below are instructions on how to use it.
+CardCollector is a Java 17 CLI for managing a trading card inventory and a separate wishlist. It stores card name, quantity, price, and timestamp history for added, modified, and removed cards.
 
-## Setting up in Intellij
+## Setup
 
-Prerequisites: JDK 17 (use the exact version), update Intellij to the most recent version.
+1. Install Java 17.
+2. Clone the repository.
+3. Run the app:
 
-1. **Ensure Intellij JDK 17 is defined as an SDK**, as described [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk) -- this step is not needed if you have used JDK 17 in a previous Intellij project.
-1. **Import the project _as a Gradle project_**, as described [here](https://se-education.org/guides/tutorials/intellijImportGradleProject.html).
-1. **Verify the setup**: After the importing is complete, locate the `src/main/java/seedu/cardcollector/CardCollector.java` file, right-click it, and choose `Run CardCollector.main()`. If the setup is correct, you should see something like the below:
-   ```
-   > Task :compileJava
-   > Task :processResources NO-SOURCE
-   > Task :classes
-   
-   > Task :CardCollector.main()
-   Hello I'm
-     ____              _  ____      _ _           _             
-   / ___|__ _ _ __ __| |/ ___|___ | | | ___  ___| |_ ___  _ __
-   | |   / _` | '__/ _` | |   / _ \| | |/ _ \/ __| __/ _ \| '__|
-   | |__| (_| | | | (_| | |__| (_) | | |  __/ (__| || (_) | |   
-   \____\__,_|_|  \__,_|\____\___/|_|_|\___|\___|\__\___/|_|
-   
-   What can I do for you?
-   ```
-   Type some word and press enter to let the execution proceed to the end.
+```bash
+./gradlew run
+```
 
-**Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+To run the test suite:
 
-## Build automation using Gradle
+```bash
+./gradlew test
+```
 
-* This project uses Gradle for build automation and dependency management. It includes a basic build script as well (i.e. the `build.gradle` file).
-* If you are new to Gradle, refer to the [Gradle Tutorial at se-education.org/guides](https://se-education.org/guides/tutorials/gradle.html).
+## Storage
 
-## Testing
+CardCollector saves its active data file automatically to `data/cardcollector.txt`.
 
-### I/O redirection tests
+You can also export and import full app data manually:
 
-* To run _I/O redirection_ tests (aka _Text UI tests_), navigate to the `text-ui-test` and run the `runtest(.bat/.sh)` script.
+- `download /f backups/cardcollector.txt`
+  Saves the current inventory and wishlist to the given file.
+- `upload /f backups/cardcollector.txt`
+  Loads inventory and wishlist from the given file into the current session.
+- `undoupload`
+  Restores the session data from before the last successful upload.
 
-### JUnit tests
+`upload` now shows a warning before replacing current data. After a successful upload, `undoupload` can restore the previous session state, then normal auto-save continues using the active storage file at `data/cardcollector.txt`.
 
-* A skeleton JUnit test (`src/test/java/seedu/cardcollector/CardCollectorTest.java`) is provided with this project template. 
-* If you are new to JUnit, refer to the [JUnit Tutorial at se-education.org/guides](https://se-education.org/guides/tutorials/junit.html).
+## Commands
 
-## Checkstyle
+- `add /n NAME /q QTY /p PRICE`
+  `NAME` can contain spaces, `QTY` must be an integer greater than or equal to 0, and `PRICE` must be a valid number.
+- `edit INDEX [/n NAME] [/q QTY] [/p PRICE]`
+- `list`
+- `find [/n NAME] [/p PRICE] [/q QUANTITY]`
+- `compare INDEX1 INDEX2`
+- `removeindex INDEX`
+- `removename NAME`
+- `history [added | modified | removed] [NUMBER | all]`
+- `download /f FILE_PATH`
+- `upload /f FILE_PATH`
+- `undoupload`
+- `bye`
 
-* A sample CheckStyle rule configuration is provided in this project.
-* If you are new to Checkstyle, refer to the [Checkstyle Tutorial at se-education.org/guides](https://se-education.org/guides/tutorials/checkstyle.html).
-
-## CI using GitHub Actions
-
-The project uses [GitHub actions](https://github.com/features/actions) for CI. When you push a commit to this repo or PR against it, GitHub actions will run automatically to build and verify the code as updated by the commit/PR.
+Prefix a command with `wishlist ` to run list-specific commands on the wishlist instead of the main inventory, for example `wishlist add /n Umbreon /q 1 /p 42.0` or `wishlist history added`.
 
 ## Documentation
 
-`/docs` folder contains a skeleton version of the project documentation.
-
-Steps for publishing documentation to the public: 
-1. If you are using this project template for an individual project, go your fork on GitHub.<br>
-   If you are using this project template for a team project, go to the team fork on GitHub.
-1. Click on the `settings` tab.
-1. Scroll down to the `GitHub Pages` section.
-1. Set the `source` as `master branch /docs folder`.
-1. Optionally, use the `choose a theme` button to choose a theme for your documentation.
+- User guide: [docs/UserGuide.md](/Users/raventang/Documents/school/Semester%206/NUS/CS2113/tp/docs/UserGuide.md)
+- Developer guide: [docs/DeveloperGuide.md](/Users/raventang/Documents/school/Semester%206/NUS/CS2113/tp/docs/DeveloperGuide.md)

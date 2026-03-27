@@ -3,6 +3,7 @@ package seedu.cardcollector;
 import java.io.IOException;
 
 import seedu.cardcollector.command.Command;
+import seedu.cardcollector.command.CommandContext;
 import seedu.cardcollector.command.CommandResult;
 import seedu.cardcollector.exception.ParseBlankCommandException;
 import seedu.cardcollector.exception.ParseInvalidArgumentException;
@@ -15,11 +16,13 @@ public class CardCollector {
     private final CardsList wishlist;
     private final Parser parser;
     private final Storage storage;
+    private final UploadUndoState uploadUndoState;
 
     public CardCollector() {
         ui = new Ui();
         parser = new Parser();
         storage = Storage.createDefault();
+        uploadUndoState = new UploadUndoState();
 
         AppState initialState = loadState();
         inventory = initialState.getInventory();
@@ -51,8 +54,12 @@ public class CardCollector {
             try {
                 Command command = parser.parse(parseInput);
                 CardsList targetList = isWishlistCommand ? wishlist : inventory;
-                CommandResult result = command.execute(ui, targetList);
-                saveState();
+                CommandContext context = new CommandContext(
+                        ui, targetList, inventory, wishlist, storage, uploadUndoState);
+                CommandResult result = command.execute(context);
+                if (result.shouldSave()) {
+                    saveState();
+                }
                 isRunning = !result.getIsExit();
             } catch (ParseBlankCommandException e) {
                 ui.printBlankCommandWarning();

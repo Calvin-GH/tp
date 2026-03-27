@@ -117,6 +117,17 @@ public class Card {
         this.lastModified = lastModified;
     }
 
+    public Card copy() {
+        return new Card.Builder()
+                .uid(uid)
+                .name(name)
+                .quantity(quantity)
+                .price(price)
+                .lastAdded(lastAdded)
+                .lastModified(lastModified)
+                .build();
+    }
+
     @Override
     public String toString() {
         return name + " | Quantity: " + quantity + " | Price: " + price;

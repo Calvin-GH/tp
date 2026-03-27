@@ -2,106 +2,149 @@
 
 ## Introduction
 
-CardCollector is a command-line interface (CLI) application designed for trading card enthusiasts to easily manage their card inventory. Track the cards you own, their quantities, their prices, and your collection history efficiently.
+CardCollector is a CLI application for tracking a trading card inventory and a separate wishlist. Each card stores a name, quantity, price, and timestamps used by the history commands.
 
 ## Quick Start
 
-{Give steps to get started quickly}
+1. Ensure that Java 17 or above is installed.
+2. Run `./gradlew run` from the project root.
+3. Enter commands in the terminal.
 
-1. Ensure that you have Java 17 or above installed.
-1. Down the latest version of `CardCollector` from [here](http://link.to/todo).
-
-## Features 
-
+## Features
 
 ### Adding a card: `add`
-Adds a new card to your inventory.
-**Format:** `add /n [NAME] /q [QUANTITY] /p [PRICE]`
-* The `NAME` can contain spaces.
-* `QUANTITY` must be an integer greater than or equal to 0.
-* `PRICE` must be a positive number.
 
-**Example:**
-`add /n Pikachu VMAX /q 2 /p 25.50`
+Adds a new card to the current list.
+
+**Format:** `add /n NAME /q QUANTITY /p PRICE`
+
+- `NAME` can contain spaces.
+- `QUANTITY` must be an integer greater than or equal to 0.
+- `PRICE` must be a valid number.
+
+**Example:** `add /n Pikachu VMAX /q 2 /p 25.50`
 
 ### Editing a card: `edit`
-Edits the name, quantity, or price of an existing card.  
-**Format:** `edit INDEX [/n NEW_NAME] [/q NEW_QUANTITY] [/p NEW_PRICE]`
-* At least **one** field must be provided.
-* `INDEX` is the number shown in the list.
 
-**Examples:**  
-`edit 1 /n Dragonite VMAX`  
+Edits the name, quantity, or price of an existing card.
+
+**Format:** `edit INDEX [/n NEW_NAME] [/q NEW_QUANTITY] [/p NEW_PRICE]`
+
+**Examples:**
+`edit 1 /n Dragonite VMAX`
 `edit 2 /q 5 /p 12.99`
 
-### Comparing two cards: `compare`
-Compares any two cards from the same list (main collection or wishlist).  
-**Format:** `compare INDEX1 INDEX2`
-* `INDEX1` and `INDEX2` must be different valid indices shown in the list.
-* Works on both the main inventory and the wishlist (use the `wishlist` prefix).
+### Comparing cards: `compare`
 
-**Examples:**  
-`compare 1 3`  
+Compares two cards from the same list.
+
+**Format:** `compare INDEX1 INDEX2`
+
+**Examples:**
+`compare 1 3`
 `wishlist compare 2 4`
 
-### Wishlist commands
-All commands work on a separate wishlist. Prefix any command with `wishlist`.  
-**Examples:**  
-`wishlist add /n Charizard /q 1 /p 99.99`  
-`wishlist list`  
-`wishlist edit 1 /n Shiny Charizard`  
-`wishlist remove 2`
+### Listing cards: `list`
 
-### Finding cards: `find`
-Searches your inventory for cards that match specific attributes. You can search by name, price, quantity, or a combination of them.
-**Format:** `find [/n NAME] [/p PRICE] [/q QUANTITY]`
-* The search is case-insensitive.
-* At least one of the optional fields must be provided.
-* When multiple attributes are specified, it behaves like an AND operation (finds cards matching *all* provided attributes).
+Displays all cards in the current list.
 
-**Examples:**
-* `find /n pika` returns all cards with "pika" in the name.
-* `find /p 5.99` returns all cards priced exactly at 5.99.
-* `find /n charizard /q 2` returns cards with "charizard" in the name that also have exactly 2 in quantity.
-
-### Removing a card: `remove`
-Removes a card from the inventory either by its displayed index number or by its exact name.
-**Format:** `remove [INDEX]` OR `remove [NAME]`
-* `INDEX` refers to the index number shown in the displayed list.
-* If a string is provided instead of an index, it will attempt to remove the first card matching that exact name (case-insensitive).
-
-**Examples:**
-* `remove 2` removes the 2nd card in the inventory list.
-* `remove Pikachu` removes the card named "Pikachu".
-
-### Listing all cards: `list`
-Displays all the cards currently in your inventory.
 **Format:** `list`
 
+### Finding cards: `find`
+
+Searches the current list by name, price, quantity, or any combination of them.
+
+**Format:** `find [/n NAME] [/p PRICE] [/q QUANTITY]`
+
+**Examples:**
+`find /n pika`
+`find /p 5.99`
+`find /n charizard /q 2`
+
+### Removing a card by index: `removeindex`
+
+Removes a card by its displayed position.
+
+**Format:** `removeindex INDEX`
+
+**Example:** `removeindex 2`
+
+### Removing a card by name: `removename`
+
+Removes the first exact case-insensitive name match.
+
+**Format:** `removename NAME`
+
+**Example:** `removename Pikachu`
+
 ### Viewing history: `history`
-Displays a chronological history of your cards based on when they were added, modified, or removed.
+
+Displays cards ordered by added, modified, or removed timestamps.
+
 **Format:** `history [added | modified | removed] [NUMBER | all]`
 
 **Examples:**
-* `history added` shows the history of cards sorted by the date they were added.
-* `history removed` shows a log of the cards you have deleted from your inventory.
+`history added`
+`history removed all`
+
+### Using the wishlist: `wishlist`
+
+Prefix any list-based command with `wishlist ` to run it on the wishlist instead of the main inventory.
+
+**Examples:**
+`wishlist add /n Charizard /q 1 /p 99.99`
+`wishlist list`
+`wishlist edit 1 /n Shiny Charizard`
+`wishlist removeindex 2`
+
+### Downloading a storage snapshot: `download`
+
+Exports the current full app state, including inventory and wishlist, to a file path of your choice.
+
+**Format:** `download /f FILE_PATH`
+
+**Example:** `download /f backups/cardcollector.txt`
+
+### Uploading a storage snapshot: `upload`
+
+Imports a previously exported storage file into the current session.
+
+**Format:** `upload /f FILE_PATH`
+
+**Example:** `upload /f backups/cardcollector.txt`
+
+`upload` warns before replacing the current in-memory inventory and wishlist. After a successful upload, you can use `undoupload` once to restore the previous session state. The app continues to auto-save to `data/cardcollector.txt`.
+
+### Undoing the last upload: `undoupload`
+
+Restores the inventory and wishlist from before the last successful upload.
+
+**Format:** `undoupload`
 
 ### Exiting the program: `bye`
+
 Exits the application.
+
 **Format:** `bye`
 
 ## FAQ
 
-**Q**: How do I transfer my data to another computer? 
+**Q**: How do I transfer my data to another computer?
 
-**A**: {your answer here}
+**A**: Run `download /f some-file.txt`, move that file to the other computer, then run `upload /f some-file.txt` there.
 
 ## Command Summary
 
-{Give a 'cheat sheet' of commands here}
-
-* Add todo `todo n/TODO_NAME d/DEADLINE`
-* Find a card `find [/n NAME] [/p PRICE] [/q QUANTITY]`
-* Edit a card `edit INDEX [/n NAME] [/q QTY] [/p PRICE]`
-* Compare two cards `compare INDEX1 INDEX2` 
-* Wishlist commands `wishlist <any command>`
+- `add /n NAME /q QTY /p PRICE`
+- `edit INDEX [/n NAME] [/q QTY] [/p PRICE]`
+- `list`
+- `find [/n NAME] [/p PRICE] [/q QUANTITY]`
+- `compare INDEX1 INDEX2`
+- `removeindex INDEX`
+- `removename NAME`
+- `history [added | modified | removed] [NUMBER | all]`
+- `download /f FILE_PATH`
+- `upload /f FILE_PATH`
+- `undoupload`
+- `wishlist <list command>`
+- `bye`

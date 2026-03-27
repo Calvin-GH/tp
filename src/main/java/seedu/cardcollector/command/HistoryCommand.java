@@ -1,8 +1,6 @@
 package seedu.cardcollector.command;
 
 import seedu.cardcollector.CardHistoryType;
-import seedu.cardcollector.CardsList;
-import seedu.cardcollector.Ui;
 
 public class HistoryCommand extends Command {
     private final CardHistoryType historyType;
@@ -14,7 +12,9 @@ public class HistoryCommand extends Command {
     }
 
     @Override
-    public CommandResult execute(Ui ui, CardsList inventory) {
+    public CommandResult execute(CommandContext context) {
+        var ui = context.getUi();
+        var inventory = context.getTargetList();
         switch (historyType) {
         case ADDED -> ui.printAddedHistory(inventory, maxDisplayCount);
         case MODIFIED -> ui.printModifiedHistory(inventory, maxDisplayCount);

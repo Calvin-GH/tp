@@ -2,7 +2,10 @@ package seedu.cardcollector.parsing;
 
 import org.junit.jupiter.api.Test;
 import seedu.cardcollector.command.Command;
+import seedu.cardcollector.command.DownloadCommand;
 import seedu.cardcollector.command.HistoryCommand;
+import seedu.cardcollector.command.UndoUploadCommand;
+import seedu.cardcollector.command.UploadCommand;
 import seedu.cardcollector.exception.ParseBlankCommandException;
 import seedu.cardcollector.exception.ParseInvalidArgumentException;
 import seedu.cardcollector.exception.ParseUnknownCommandException;
@@ -84,6 +87,40 @@ public class ParserTest {
 
         Command command5 = parser.parse("history modified 5");
         assertInstanceOf(HistoryCommand.class, command5);
+    }
+
+    @Test
+    public void parse_transferCommands_success() {
+        Parser parser = new Parser();
+
+        Command downloadCommand = parser.parse("download /f backups/cards.txt");
+        assertInstanceOf(DownloadCommand.class, downloadCommand);
+
+        Command uploadCommand = parser.parse("upload /f backups/cards.txt");
+        assertInstanceOf(UploadCommand.class, uploadCommand);
+
+        Command undoUploadCommand = parser.parse("undoupload");
+        assertInstanceOf(UndoUploadCommand.class, undoUploadCommand);
+    }
+
+    @Test
+    public void parse_transferInvalidPath() {
+        Parser parser = new Parser();
+
+        assertThrows(
+                ParseInvalidArgumentException.class,
+                () -> parser.parse("download")
+        );
+
+        assertThrows(
+                ParseInvalidArgumentException.class,
+                () -> parser.parse("upload /f")
+        );
+
+        assertThrows(
+                ParseInvalidArgumentException.class,
+                () -> parser.parse("undoupload now")
+        );
     }
 
     //@@author

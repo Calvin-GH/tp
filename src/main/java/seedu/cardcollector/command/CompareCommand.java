@@ -1,8 +1,5 @@
 package seedu.cardcollector.command;
 
-import seedu.cardcollector.CardsList;
-import seedu.cardcollector.Ui;
-
 public class CompareCommand extends Command {
 
     private final int index1;
@@ -14,7 +11,9 @@ public class CompareCommand extends Command {
     }
 
     @Override
-    public CommandResult execute(Ui ui, CardsList cardsList) {
+    public CommandResult execute(CommandContext context) {
+        var ui = context.getUi();
+        var cardsList = context.getTargetList();
         if (index1 < 0 || index1 >= cardsList.getSize() ||
                 index2 < 0 || index2 >= cardsList.getSize() ||
                 index1 == index2) {

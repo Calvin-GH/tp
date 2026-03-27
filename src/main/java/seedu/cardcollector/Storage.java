@@ -66,7 +66,10 @@ public class Storage {
     }
 
     public void save(AppState state) throws IOException {
-        Files.createDirectories(filePath.getParent());
+        Path parent = filePath.getParent();
+        if (parent != null) {
+            Files.createDirectories(parent);
+        }
 
         ArrayList<String> lines = new ArrayList<>();
         lines.add(FILE_HEADER);
@@ -78,6 +81,10 @@ public class Storage {
         appendSection(lines, "wishlist_added", state.getWishlist().getAddedCards());
 
         Files.write(filePath, lines, StandardCharsets.UTF_8);
+    }
+
+    public Path getFilePath() {
+        return filePath;
     }
 
     private static CardsList buildList(Map<String, ArrayList<Card>> sections,

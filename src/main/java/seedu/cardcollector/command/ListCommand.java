@@ -1,12 +1,9 @@
 package seedu.cardcollector.command;
 
-import seedu.cardcollector.CardsList;
-import seedu.cardcollector.Ui;
-
 public class ListCommand extends Command {
     @Override
-    public CommandResult execute(Ui ui, CardsList inventory) {
-        ui.printList(inventory);
+    public CommandResult execute(CommandContext context) {
+        context.getUi().printList(context.getTargetList());
         return new CommandResult(false);
     }
 }

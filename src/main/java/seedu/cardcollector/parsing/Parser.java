@@ -1,20 +1,23 @@
 package seedu.cardcollector.parsing;
 
+import java.nio.file.Path;
 import seedu.cardcollector.CardHistoryType;
 import seedu.cardcollector.command.AddCommand;
 import seedu.cardcollector.command.Command;
 import seedu.cardcollector.command.EditCommand;
 import seedu.cardcollector.command.CompareCommand;
+import seedu.cardcollector.command.DownloadCommand;
 import seedu.cardcollector.command.ExitCommand;
 import seedu.cardcollector.command.FindCommand;
 import seedu.cardcollector.command.HistoryCommand;
 import seedu.cardcollector.command.ListCommand;
 import seedu.cardcollector.command.RemoveCardByIndexCommand;
 import seedu.cardcollector.command.RemoveCardByNameCommand;
+import seedu.cardcollector.command.UndoUploadCommand;
+import seedu.cardcollector.command.UploadCommand;
 import seedu.cardcollector.exception.ParseBlankCommandException;
 import seedu.cardcollector.exception.ParseInvalidArgumentException;
 import seedu.cardcollector.exception.ParseUnknownCommandException;
-
 import java.util.UUID;
 
 public class Parser {
@@ -29,6 +32,9 @@ public class Parser {
     private static final String KEYWORD_EXIT_COMMAND = "bye";
     private static final String KEYWORD_EDIT_COMMAND = "edit";
     private static final String KEYWORD_COMPARE_COMMAND = "compare";
+    private static final String KEYWORD_DOWNLOAD_COMMAND = "download";
+    private static final String KEYWORD_UPLOAD_COMMAND = "upload";
+    private static final String KEYWORD_UNDO_UPLOAD_COMMAND = "undoupload";
 
     private static final String[] USAGE_HISTORY_COMMAND = {
         "history [added | modified | removed] [NUMBER | all]",
@@ -40,6 +46,12 @@ public class Parser {
         "find /n Pikachu",
         "find /p 12.5",
         "find /n Pikachu /q 3"
+    };
+
+    private static final String[] USAGE_TRANSFER_COMMAND = {
+        "%s /f FILE_PATH",
+        "download /f backups/cardcollector.txt",
+        "upload /f backups/cardcollector.txt"
     };
 
     public Command parse(String input) throws
@@ -75,6 +87,12 @@ public class Parser {
             return handleEdit(arguments);
         case KEYWORD_COMPARE_COMMAND:
             return handleCompare(arguments);
+        case KEYWORD_DOWNLOAD_COMMAND:
+            return handleDownload(arguments);
+        case KEYWORD_UPLOAD_COMMAND:
+            return handleUpload(arguments);
+        case KEYWORD_UNDO_UPLOAD_COMMAND:
+            return handleUndoUpload(arguments);
         default:
             throw new ParseUnknownCommandException(commandKeyword);
         }
@@ -228,6 +246,51 @@ public class Parser {
             );
         }
         return new ExitCommand();
+    }
+
+    private Command handleDownload(String arguments) throws ParseInvalidArgumentException {
+        return new DownloadCommand(parseTransferPath(arguments, KEYWORD_DOWNLOAD_COMMAND));
+    }
+
+    private Command handleUpload(String arguments) throws ParseInvalidArgumentException {
+        return new UploadCommand(parseTransferPath(arguments, KEYWORD_UPLOAD_COMMAND));
+    }
+
+    private Command handleUndoUpload(String arguments) throws ParseInvalidArgumentException {
+        if (!arguments.isBlank()) {
+            throw new ParseInvalidArgumentException(
+                    "undoupload does not take any arguments",
+                    new String[] {"undoupload"}
+            );
+        }
+        return new UndoUploadCommand();
+    }
+
+    private Path parseTransferPath(String arguments, String commandWord) throws ParseInvalidArgumentException {
+        if (arguments.isBlank() || !arguments.contains("/f")) {
+            throw new ParseInvalidArgumentException(
+                    "File path must be provided with /f",
+                    getTransferUsage(commandWord)
+            );
+        }
+
+        String path = arguments.substring(arguments.indexOf("/f") + 2).trim();
+        if (path.isEmpty()) {
+            throw new ParseInvalidArgumentException(
+                    "File path cannot be blank",
+                    getTransferUsage(commandWord)
+            );
+        }
+
+        return Path.of(path);
+    }
+
+    private String[] getTransferUsage(String commandWord) {
+        return new String[] {
+            String.format(USAGE_TRANSFER_COMMAND[0], commandWord),
+            USAGE_TRANSFER_COMMAND[1],
+            USAGE_TRANSFER_COMMAND[2]
+        };
     }
 
     /**

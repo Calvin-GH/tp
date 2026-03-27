@@ -3,6 +3,8 @@ package seedu.cardcollector;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class CardsList {
@@ -127,6 +129,37 @@ public class CardsList {
 
     public int getAddedSize() {
         return addedCards.size();
+    }
+
+    public void replaceWith(CardsList other) {
+        assert other != null : "Replacement list should not be null";
+
+        cards.clear();
+        cards.addAll(other.getCards());
+
+        removedCards.clear();
+        removedCards.addAll(other.getRemovedCards());
+
+        addedCards.clear();
+        addedCards.addAll(other.getAddedCards());
+    }
+
+    public CardsList deepCopy() {
+        Map<java.util.UUID, Card> copiedCards = new HashMap<>();
+        return new CardsList(
+                copyCards(cards, copiedCards),
+                copyCards(removedCards, copiedCards),
+                copyCards(addedCards, copiedCards)
+        );
+    }
+
+    private static ArrayList<Card> copyCards(ArrayList<Card> source, Map<java.util.UUID, Card> copiedCards) {
+        ArrayList<Card> result = new ArrayList<>();
+        for (Card card : source) {
+            Card copy = copiedCards.computeIfAbsent(card.getUid(), ignored -> card.copy());
+            result.add(copy);
+        }
+        return result;
     }
 
     public ArrayList<Card> findCards(String name, Float price, Integer quantity) {

@@ -16,4 +16,8 @@ public class AppState {
     public CardsList getWishlist() {
         return wishlist;
     }
+
+    public AppState deepCopy() {
+        return new AppState(inventory.deepCopy(), wishlist.deepCopy());
+    }
 }
