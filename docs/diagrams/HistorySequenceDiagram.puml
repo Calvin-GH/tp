@@ -8,7 +8,7 @@ participant ":Parser" as Parser PARSER_COLOR_PRIMARY
 participant ":HistoryCommand" as HistoryCommand COMMAND_COLOR_PRIMARY
 participant ":Ui" as Ui UI_COLOR_PRIMARY
 
-CardCollector -> Parser : parse("history added all")
+CardCollector -> Parser : parse("history all added")
 activate Parser
 
 create HistoryCommand
