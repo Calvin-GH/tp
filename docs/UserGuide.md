@@ -75,13 +75,27 @@ Permanently reorders the stored cards in your inventory or wishlist by the chose
 
 ### Listing cards: `list`
 
-Displays all cards in the current list, or only cards with a specific tag/folder.
+Displays all cards in the current list in a sorted order.
 
-**Format:** `list [/t TAG]`
+**Format:** `list [NUMBER | all] [index | quantity | price] [ascending | descending]`
 
 **Examples:**
 `list`
-`list /t sealed`
+`list all`
+`list 50 quantity ascending`
+
+- Arguments are optional, but if specified, they must be in order.
+- Argument matching is intentionally fuzzy for fast usage.
+
+### Filter cards: `filter`
+
+Displays only cards in the current list that are filtered by tag.
+
+**Format:** `filter /t TAG`
+
+**Examples:**
+`filter`
+`filter /t sealed`
 
 ### Viewing analytics: `analytics` or `stats`
 
@@ -144,7 +158,7 @@ Displays a historical log of when cards were added, modified, or removed.
 **Format:** `history [NUMBER | all] [added | modified | removed | entire] [ascending | descending]`
 
 - Arguments are optional, but if specified, they must be in order.
-- Argument matching is intentionally fuzzy for fast usage, an argument will be recognized as long as the prefix matches.
+- Argument matching is intentionally fuzzy for fast usage.
 - An 'added' entry occurs when a new or existing card is added, or when the edit command increases the quantity of the card.
 - A 'modified' entry occurs when a card value is edited, **excluding** any changes to the quantity of the card.
 - A 'removed' entry occurs when a card is removed, or when the edit command decreases the quantity of the card.

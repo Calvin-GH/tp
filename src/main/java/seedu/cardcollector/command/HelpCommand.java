@@ -38,7 +38,7 @@ public class HelpCommand extends Command {
                 "reorder price desc",
                 "wishlist reorder name asc"
             }),
-            new HelpTopic("list", List.of(), "list cards, optionally viewing a sorted list", new String[] {
+            new HelpTopic("list", List.of(), "list cards in a sorted order", new String[] {
                 "list [NUMBER | all] [index | quantity | price] [ascending | descending]",
                 "list",
                 "list 50 quantity ascending"
