@@ -3,6 +3,7 @@ package seedu.cardcollector;
 import seedu.cardcollector.card.Card;
 import seedu.cardcollector.card.CardFieldChange;
 import seedu.cardcollector.card.CardSortCriteria;
+import seedu.cardcollector.card.CardSorter;
 import seedu.cardcollector.card.CardsHistory;
 import seedu.cardcollector.card.CardHistoryEntry;
 import seedu.cardcollector.card.CardHistoryType;
@@ -34,7 +35,8 @@ public class Ui {
             "Usage: \"%1$s\"%n";
     private static final String FORMAT_INVALID_ARGUMENT_EXAMPLE_USAGE =
             "Example: \"%1$s\"%n";
-
+    
+    
     private static final String FORMAT_HISTORY_HINT_ENTIRE =
             "Fetching history for addition, modification and removal of cards.%n";
     private static final String FORMAT_HISTORY_HINT_ADDED =
@@ -43,14 +45,14 @@ public class Ui {
             "Fetching history for modification of cards.%n";
     private static final String FORMAT_HISTORY_HINT_REMOVED =
             "Fetching history for removal of cards.%n";
-    private static final String FORMAT_HISTORY_NO_RECORD =
-            "No relevant history found!%n";
     private static final String FORMAT_HISTORY_ADDED_RECORD =
             "[%1$s] + ADDED %2$s UNITS OF %3$s%n";
     private static final String FORMAT_HISTORY_MODIFIED_RECORD =
             "[%1$s] # MODIFIED TO %2$s%n%3$s%n";
     private static final String FORMAT_HISTORY_REMOVED_RECORD =
             "[%1$s] - REMOVED %2$s UNITS OF %3$s%n";
+    private static final String FORMAT_HISTORY_DISPLAY_NO_RECORD =
+            "No relevant history found!%n";
     private static final String FORMAT_HISTORY_DISPLAY_ALL_RECORDS =
             "Displaying all %1$d records:%n";
     private static final String FORMAT_HISTORY_DISPLAY_LATEST_N_RECORDS =
@@ -59,11 +61,20 @@ public class Ui {
             "Displaying oldest %1$d out of %2$d records:%n";
     private static final String FORMAT_HISTORY_CHANGED_FIELD =
             "\"%1$s\": %2$s -> %3$s";
+    
 
     private static final String FORMAT_LIST_RECORD =
             "[index = %1$s] %2$s%n";
-    private static final String FORMAT_LIST_NO_RECORD =
+    private static final String FORMAT_LIST_DISPLAY_NO_RECORD =
             "Your card list is empty!%n";
+    private static final String FORMAT_LIST_DISPLAY_ALL_RECORDS_ASCENDING =
+            "Displaying all %1$d cards sorted by %2$s in ascending order:%n";
+    private static final String FORMAT_LIST_DISPLAY_ALL_RECORDS_DESCENDING =
+            "Displaying all %1$d cards sorted by %2$s in descending order:%n";
+    private static final String FORMAT_LIST_DISPLAY_N_RECORDS_ASCENDING =
+            "Displaying %1$d out of %2$d cards sorted by %3$s in ascending order:%n";
+    private static final String FORMAT_LIST_DISPLAY_N_RECORDS_DESCENDING =
+            "Displaying %1$d out of %2$d cards sorted by %3$s in descending order:%n";
 
     private static final int DISPLAY_DEFAULT_LIMIT = 15;
 
@@ -241,7 +252,7 @@ public class Ui {
         assert listSize >= 0 : "List size cannot be negative";
 
         if (listSize == 0) {
-            out.println(FORMAT_LIST_NO_RECORD);
+            out.println(FORMAT_LIST_DISPLAY_NO_RECORD);
         } else {
             out.println("Here is your card list!");
             for (int i = 0; i < listSize; i++) {
@@ -253,27 +264,59 @@ public class Ui {
         printBorder();
     }
 
-
     public void printList(CardsList list, CardSortCriteria sortCriteria,
                           int maxDisplayCount, boolean isDescending) {
         printBorder();
 
-        int originalCardsSize = list.getSize();
-
-        if (originalCardsSize == 0) {
-            out.println(FORMAT_LIST_NO_RECORD);
-            return;
-        }
-
-        ArrayList<Card> sortedCards = list.getSortedCards(sortCriteria, maxDisplayCount,
+        ArrayList<Card> cards = list.getCards();
+        ArrayList<Card> sortedCards = CardSorter.sort(cards, sortCriteria, maxDisplayCount,
                 DISPLAY_DEFAULT_LIMIT, isDescending);
 
-        int listSize = list.getSize();
+        printListRecordCount(list.getSize(), sortedCards.size(), isDescending, sortCriteria.getKeyword());
 
         for (Card card : sortedCards) {
             out.printf(FORMAT_LIST_RECORD, list.getIndex(card) + 1, card);
         }
+
         printBorder();
+    }
+
+    /**
+     * Prints a formatted message indicating the number of records being displayed.
+     * The message varies based on whether all records are shown or only a limited
+     * subset, and reflects the current sort order.
+     *
+     * @param originalSize The total number of records available before the limit
+     *                     is applied.
+     * @param limitedSize The total number of records available after the limit
+     *                    is applied.
+     * @param isDescending If records are sorted in descending order.
+     * @param sortCriteriaString The criteria by which records are sorted.
+     */
+    private void printListRecordCount(int originalSize, int limitedSize,
+                                      boolean isDescending, String sortCriteriaString) {
+        if (originalSize == 0) {
+            out.printf(FORMAT_LIST_DISPLAY_NO_RECORD);
+            return;
+        }
+
+        if (originalSize > limitedSize) {
+            if (isDescending) {
+                out.printf(FORMAT_LIST_DISPLAY_N_RECORDS_DESCENDING,
+                        limitedSize, originalSize, sortCriteriaString);
+            } else {
+                out.printf(FORMAT_LIST_DISPLAY_N_RECORDS_ASCENDING,
+                        limitedSize, originalSize, sortCriteriaString);
+            }
+        } else {
+            if (isDescending) {
+                out.printf(FORMAT_LIST_DISPLAY_ALL_RECORDS_DESCENDING,
+                        originalSize, sortCriteriaString);
+            } else {
+                out.printf(FORMAT_LIST_DISPLAY_ALL_RECORDS_ASCENDING,
+                        originalSize, sortCriteriaString);
+            }
+        }
     }
 
     public void printAnalytics(String listName, CardsAnalytics analytics) {
@@ -431,12 +474,25 @@ public class Ui {
         printBorder();
     }
 
-    private void printHistoryRecordCount(int originalSize, int maxLimitSize, boolean latest) {
-        if (originalSize > maxLimitSize) {
+    /**
+     * Prints a formatted message indicating the number of historical records being displayed.
+     * The message varies based on whether all records are shown or only a limited
+     * subset, and reflects the current sort order.
+     *
+     * @param originalSize The total number of records available before the limit
+     *                     is applied.
+     * @param limitedSize The total number of records available after the limit
+     *                    is applied.
+     * @param latest If records are sorted by latest first.
+     */
+    private void printHistoryRecordCount(int originalSize, int limitedSize, boolean latest) {
+        if (originalSize == 0) {
+            out.printf(FORMAT_HISTORY_DISPLAY_NO_RECORD);
+        } else if (originalSize > limitedSize) {
             if (latest) {
-                out.printf(FORMAT_HISTORY_DISPLAY_LATEST_N_RECORDS, maxLimitSize, originalSize);
+                out.printf(FORMAT_HISTORY_DISPLAY_LATEST_N_RECORDS, limitedSize, originalSize);
             } else {
-                out.printf(FORMAT_HISTORY_DISPLAY_OLDEST_N_RECORDS, maxLimitSize, originalSize);
+                out.printf(FORMAT_HISTORY_DISPLAY_OLDEST_N_RECORDS, limitedSize, originalSize);
             }
         } else {
             out.printf(FORMAT_HISTORY_DISPLAY_ALL_RECORDS, originalSize);
@@ -480,11 +536,7 @@ public class Ui {
         int recordsLimit = (maxDisplayCount == -1) ? DISPLAY_DEFAULT_LIMIT :
                 Math.min(filteredHistoryList.size(), maxDisplayCount);
 
-        if (filteredHistoryList.isEmpty()) {
-            out.printf(FORMAT_HISTORY_NO_RECORD);
-        } else {
-            printHistoryRecordCount(filteredHistoryList.size(), recordsLimit, isDescending);
-        }
+        printHistoryRecordCount(filteredHistoryList.size(), recordsLimit, isDescending);
 
         for (int i = 0; i < recordsLimit && i < filteredHistoryList.size(); i++) {
             CardHistoryEntry entry = filteredHistoryList.get(i);

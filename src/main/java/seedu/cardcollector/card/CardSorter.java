@@ -3,14 +3,15 @@ package seedu.cardcollector.card;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.Collections;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-public class CardSort {
+public class CardSorter {
     public static Comparator<Card> getSortComparator(CardSortCriteria criteria) {
         switch (criteria) {
-        case DEFAULT -> {
-            assert false : "Default criteria should not use a comparator";
+        case INDEX -> {
+            assert false : "index criteria should not use a comparator";
         }
         case NAME -> {
             return Comparator.comparing(Card::getName);
@@ -40,7 +41,7 @@ public class CardSort {
         return null;
     }
 
-    public static ArrayList<Card> sortCards(
+    public static ArrayList<Card> sort(
             ArrayList<Card> cards,
             CardSortCriteria criteria,
             int maxLimit,
@@ -51,14 +52,21 @@ public class CardSort {
             return new ArrayList<>();
         }
 
-        Stream<Card> cardsStream = cards.stream();
+        ArrayList<Card> cardsCopy = new ArrayList<>(cards);
 
-        if (criteria != CardSortCriteria.DEFAULT) {
+        if (criteria == CardSortCriteria.INDEX && isDescending) {
+            // Directly apply ascending/descending order,
+            // without using comparator
+            Collections.reverse(cardsCopy);
+        }
+
+        Stream<Card> cardsStream = cardsCopy.stream();
+        if (criteria != CardSortCriteria.INDEX) {
             Comparator<Card> comparator = getSortComparator(criteria);
 
             assert comparator != null : "No available comparator for criteria";
 
-            // Apply ascending/descending order
+            // Apply ascending/descending order using comparator
             if (isDescending) {
                 comparator = comparator.reversed();
             }

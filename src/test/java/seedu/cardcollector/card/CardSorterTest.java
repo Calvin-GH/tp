@@ -8,10 +8,35 @@ import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-public class CardSortTest {
+public class CardSorterTest {
     //@@author HX2003
     @Test
-    public void sortCards_byPrice_success() {
+    public void sort_byIndex_success() {
+        ArrayList<Card> cards = new ArrayList<>();
+
+        Card.Builder commonBuilder = new Card.Builder()
+                .price(1.00f)
+                .quantity(1);
+
+        Card card0 = commonBuilder.name("Zero").build();
+        Card card1 = commonBuilder.name("One").build();
+
+        cards.add(card0);
+        cards.add(card1);
+
+        ArrayList<Card> resultsDescending = CardSorter.sort(
+                cards, CardSortCriteria.INDEX, -1, Integer.MAX_VALUE, true);
+        assertEquals(card1, resultsDescending.get(0));
+        assertEquals(card0, resultsDescending.get(1));
+
+        ArrayList<Card> resultsAscending = CardSorter.sort(
+                cards, CardSortCriteria.INDEX, -1, Integer.MAX_VALUE, false);
+        assertEquals(card0, resultsAscending.get(0));
+        assertEquals(card1, resultsAscending.get(1));
+    }
+
+    @Test
+    public void sort_byPrice_success() {
         ArrayList<Card> cards = new ArrayList<>();
 
         Card cheapCard = new Card.Builder()
@@ -34,14 +59,14 @@ public class CardSortTest {
         cards.add(expensiveCard);
         cards.add(moderateCard);
 
-        ArrayList<Card> resultsDescending = CardSort.sortCards(
+        ArrayList<Card> resultsDescending = CardSorter.sort(
                 cards, CardSortCriteria.PRICE, -1, Integer.MAX_VALUE, true);
         assertEquals(expensiveCard, resultsDescending.get(0));
         assertEquals(moderateCard, resultsDescending.get(1));
         assertEquals(cheapCard, resultsDescending.get(2));
 
 
-        ArrayList<Card> resultsAscending = CardSort.sortCards(
+        ArrayList<Card> resultsAscending = CardSorter.sort(
                 cards, CardSortCriteria.PRICE, -1, Integer.MAX_VALUE, false);
         assertEquals(expensiveCard, resultsAscending.get(2));
         assertEquals(moderateCard, resultsAscending.get(1));
@@ -49,7 +74,7 @@ public class CardSortTest {
     }
 
     @Test
-    public void sortCards_byLastRemoved_success() {
+    public void sort_byLastRemoved_success() {
         ArrayList<Card> cards = new ArrayList<>();
 
         Instant instantNewest = Instant.parse("2026-03-27T21:58:02Z");
@@ -85,7 +110,7 @@ public class CardSortTest {
         cards.add(oldestCard);
         cards.add(newestCard);
 
-        ArrayList<Card> resultsDescending = CardSort.sortCards(
+        ArrayList<Card> resultsDescending = CardSorter.sort(
                 cards, CardSortCriteria.LAST_REMOVED, -1, Integer.MAX_VALUE, true);
 
         assertEquals(newestCard, resultsDescending.get(0));
