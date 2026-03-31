@@ -26,7 +26,10 @@ import seedu.cardcollector.card.CardSortCriteria;
 import seedu.cardcollector.exception.ParseBlankCommandException;
 import seedu.cardcollector.exception.ParseInvalidArgumentException;
 import seedu.cardcollector.exception.ParseUnknownCommandException;
+
 import java.util.UUID;
+import java.util.HashMap;
+import java.util.Map;
 
 public class Parser {
     private static final String REGEX_WHITESPACES = "\\s+";
@@ -79,7 +82,7 @@ public class Parser {
     };
 
     private static final String[] USAGE_LIST_COMMAND = {
-        "list [NUMBER | all] [default | quantity | price] [ascending | descending]",
+        "list [NUMBER | all] [index | quantity | price] [ascending | descending]",
         "list",
         "list 50 quantity ascending"
     };
@@ -416,18 +419,8 @@ public class Parser {
         String isDescendingString = tokenizer.getString(2);
 
         int maxDisplayCount = getMaxDisplayCount(maxDisplayCountString, USAGE_LIST_COMMAND);
-        boolean isDescending = getIsDescending(isDescendingString, USAGE_LIST_COMMAND);
-
-        CardSortCriteria sortCriteria = CardSortCriteria.DEFAULT;
-        if (sortCriteriaString != null) {
-            try {
-                sortCriteria = Disambiguator.disambiguate(
-                        CardSortCriteria.class, CardSortCriteria::getKeyword, sortCriteriaString);
-            } catch (IllegalArgumentException e) {
-                throw new ParseInvalidArgumentException(
-                        "Unknown list argument! " + e.getMessage(), USAGE_LIST_COMMAND);
-            }
-        }
+        CardSortCriteria sortCriteria = getSortCriteria(sortCriteriaString);
+        boolean isDescending = getIsDescending(isDescendingString, false, USAGE_LIST_COMMAND);
 
         return new ListCommand(sortCriteria, maxDisplayCount, isDescending);
     }
@@ -513,7 +506,19 @@ public class Parser {
         };
     }
 
-
+    /**
+     * Parses a string to obtain max display count.
+     * The string should represent a positive integer or match with "all".
+     * Argument matching for "all" is intentionally fuzzy for fast usage.
+     * When "all" argument is simplified Integer.MAX_VALUE is returned.
+     *
+     * @param maxDisplayCountString The string to parse, may be null or blank.
+     * @param usage The command usage information array, used for error messaging
+     *              when an invalid argument is provided.
+     * @return Returns max display count integer.
+     * @throws ParseInvalidArgumentException If the input string is not null and not blank,
+     *                                       but does not match prefix of "all"
+     */
     private static int getMaxDisplayCount(String maxDisplayCountString, String[] usage)
             throws ParseInvalidArgumentException {
         int maxDisplayCount = -1;
@@ -546,29 +551,80 @@ public class Parser {
      * Argument matching is intentionally fuzzy for fast usage.
      *
      * @param isDescendingString The string to parse, may be null or blank.
+     * @param defaultIsDescending The default value to return;
      * @param usage The command usage information array, used for error messaging
      *              when an invalid argument is provided.
-     * @return Returns true when input is null, blank, or match prefix of "descending".
-     * @throws ParseInvalidArgumentException If the input string is not blank,
-     *                                       but does not match prefix of "descending" or "ascending"
+     * @return Returns default value when input is null, blank
+     *         return true if matching prefix of "descending".
+     * @throws ParseInvalidArgumentException If the input string is not null and not blank,
+     *                                       but the disambiguation fails.
      */
-    private static boolean getIsDescending(String isDescendingString, String[] usage)
-            throws ParseInvalidArgumentException {
-        boolean isDescending = true;
+    private static boolean getIsDescending(String isDescendingString, boolean defaultIsDescending,
+        String[] usage) throws ParseInvalidArgumentException {
 
         if (isDescendingString == null || isDescendingString.isBlank()) {
-            return isDescending;
+            return defaultIsDescending;
         }
 
-        if ("descending".startsWith(isDescendingString)) {
-            isDescending = true;
-        } else if ("ascending".startsWith(isDescendingString)) {
-            isDescending = false;
-        } else {
-            throw new ParseInvalidArgumentException("Sorting order not recognized!", usage);
+        Map<String, Boolean> map = new HashMap<>() {{
+                put("ascending", false);
+                put("descending", true);
+                }};
+
+        try {
+            return Disambiguator.disambiguate(map, isDescendingString);
+        } catch (IllegalArgumentException e) {
+            throw new ParseInvalidArgumentException(
+                    "Unknown sorting order argument! " + e.getMessage(), usage);
+        }
+    }
+
+    /**
+     * Parses a string to determine the history type.
+     * Argument matching is intentionally fuzzy for fast usage.
+     *
+     * @param historyTypeString The string to parse, may be null or blank.
+     * @return Returns the history type.
+     * @throws ParseInvalidArgumentException If the input string is not null and not blank,
+     *                                       but the disambiguation fails.
+     */
+    private static CardHistoryType getHistoryType(String historyTypeString)
+            throws ParseInvalidArgumentException {
+        if (historyTypeString == null) {
+            return CardHistoryType.ENTIRE;
         }
 
-        return isDescending;
+        try {
+            return Disambiguator.disambiguate(
+                    CardHistoryType.class, CardHistoryType::getKeyword, historyTypeString);
+        } catch (IllegalArgumentException e) {
+            throw new ParseInvalidArgumentException(
+                    "Unknown history argument! " + e.getMessage(), USAGE_HISTORY_COMMAND);
+        }
+    }
+
+    /**
+     * Parses a string to determine the sort criteria.
+     * Argument matching is intentionally fuzzy for fast usage.
+     *
+     * @param sortCriteriaString The string to parse, may be null or blank.
+     * @return Returns the sort criteria.
+     * @throws ParseInvalidArgumentException If the input string is not null and not blank,
+     *                                       but the disambiguation fails.
+     */
+    private static CardSortCriteria getSortCriteria(String sortCriteriaString)
+            throws ParseInvalidArgumentException {
+        if (sortCriteriaString == null) {
+            return CardSortCriteria.INDEX;
+        }
+
+        try {
+            return Disambiguator.disambiguate(
+                    CardSortCriteria.class, CardSortCriteria::getKeyword, sortCriteriaString);
+        } catch (IllegalArgumentException e) {
+            throw new ParseInvalidArgumentException(
+                    "Unknown list argument! " + e.getMessage(), USAGE_LIST_COMMAND);
+        }
     }
 
     /**
@@ -588,18 +644,9 @@ public class Parser {
         String isDescendingString = tokenizer.getString(2);
 
         int maxDisplayCount = getMaxDisplayCount(maxDisplayCountString, USAGE_HISTORY_COMMAND);
-        boolean isDescending = getIsDescending(isDescendingString, USAGE_HISTORY_COMMAND);
+        CardHistoryType historyType = getHistoryType(historyTypeString);
+        boolean isDescending = getIsDescending(isDescendingString, true, USAGE_HISTORY_COMMAND);
 
-        CardHistoryType historyType = CardHistoryType.ENTIRE;
-        if (historyTypeString != null) {
-            try {
-                historyType = Disambiguator.disambiguate(
-                        CardHistoryType.class, CardHistoryType::getKeyword, historyTypeString);
-            } catch (IllegalArgumentException e) {
-                throw new ParseInvalidArgumentException(
-                        "Unknown history argument! " + e.getMessage(), USAGE_HISTORY_COMMAND);
-            }
-        }
 
         return new HistoryCommand(historyType, maxDisplayCount, isDescending);
     }
