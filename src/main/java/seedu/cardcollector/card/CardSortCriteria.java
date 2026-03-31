@@ -1,7 +1,7 @@
 package seedu.cardcollector.card;
 
 public enum CardSortCriteria {
-    DEFAULT("default"),
+    INDEX("index"),
     NAME("name"),
     QUANTITY("quantity"),
     PRICE("price"),
