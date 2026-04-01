@@ -114,15 +114,27 @@ Displays cards in the current list, optionally filtered by tag.
 
 ### Viewing analytics: `analytics` or `stats`
 
-Shows a quick summary of the current list, including total value, the 3 most expensive cards,
-and the top sets by total quantity.
+Displays a detailed summary of the current list, including total value, card rankings,
+set insights, price distribution, and metadata coverage.
 
-**Format:** `analytics`
+**Format:** `analytics`  
 **Format:** `stats`
 
+- Shows the number of distinct cards, total quantity, and total collection value.
+- Computes averages such as quantity per card, value per card, and value per unit.
+- Displays the collection tier (Starter / Mid / High value) and size (Small / Medium / Large).
+- Lists the 3 most expensive cards by price.
+- Lists the top cards by total holding value (price × quantity).
+- Lists the cheapest cards by price.
+- Displays the top sets by total quantity.
+- Displays the top sets by total value.
+- Groups cards into price ranges ($0, $0.01–$9.99, $10–$49.99, $50–$99.99, $100+).
+- Shows metadata coverage, including how many cards contain notes or set information.
+- Cards without a set are excluded from set-based analytics.
+
 **Examples:**
-`analytics`
-`stats`
+`analytics`  
+`stats`  
 `wishlist analytics`
 
 ### Finding cards: `find`

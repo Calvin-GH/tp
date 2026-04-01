@@ -28,6 +28,10 @@
         - [Architecture-level](#architecture-level-5)
         - [Implementation](#implementation-3)
         - [Design decisions](#design-decisions-2)
+    - [Analytics Feature](#analytics-feature)
+        - [Architecture-level](#architecture-level-analytics)
+        - [Implementation](#implementation-analytics)
+        - [Design decisions](#design-decisions-analytics)
     - [Filter Feature](#filter-feature)
         - [Architecture-level](#architecture-level-6)
         - [Implementation](#implementation-4)
@@ -380,84 +384,75 @@ The `find` command searches the current list using one or more optional filters.
 - Keeping `find` flag-based makes it consistent with `add` and `edit`.
 - Allowing multiple simultaneous filters reduces the need for repeated commands.
 
-### Filter Feature
+### Analytics Feature
 
-The `filter` command displays cards filtered by tag.
-
-#### Architecture-level
-1. `Parser` checks whether the command includes `/t TAG`.
-2. If a tag is provided, a tagged filter command is created.
-3. Otherwise, a no-argument filter command is created.
-4. The command is executed on the active `CardsList`.
-5. `Ui` displays the resulting list.
-
-#### Implementation
-- `filter /t TAG` returns only cards that contain the specified tag.
-- `filter` with no tag displays the full list without applying a tag filter.
-- Tag comparison is case-insensitive.
-
-#### Design decisions
-- `filter` is kept separate from `find` because tag filtering is common and deserves a faster workflow.
-- The command is read-only and therefore does not participate in undo.
-
-### Tag Feature
-
-The `tag` command adds or removes labels from a card.
+The `analytics` command displays a detailed summary of the current list, including value-based insights, card rankings, set analytics, and metadata coverage.
 
 #### Architecture-level
-1. `Parser` detects whether the operation is `tag add` or `tag remove`.
-2. It extracts the target index and tag value.
-3. A `TagCommand` is created.
-4. `CardCollector` executes it through `CommandContext`.
-5. The card is updated and the resulting list is printed.
 
-#### Implementation
-- Tags are stored as part of the `Card`.
-- The same feature also supports the alias command `folder`.
-- Tag mutations create history entries because they modify card state.
-
-#### Design decisions
-- Tags provide lightweight organisation without needing a more complex categorisation model.
-- Tag changes are reversible, so `undo` can restore the previous state.
-
-### Duplicates Feature
-
-The `duplicates` command displays cards in the current list that appear to be duplicates.
-
-#### Architecture-level
-1. `Parser` creates a `DuplicatesCommand`.
+1. `Parser` creates an `AnalyticsCommand`.
 2. `CardCollector` creates a `CommandContext` and executes the command.
-3. `DuplicatesCommand` retrieves duplicate cards from the active `CardsList`.
-4. `Ui` prints the duplicate subset.
+3. `AnalyticsCommand` retrieves the active `CardsList`.
+4. `CardsList.getAnalytics(...)` computes all analytics metrics.
+5. The results are stored in a `CardsAnalytics` object.
+6. `Ui.printAnalytics(...)` formats and displays the analytics output.
 
 #### Implementation
-- The feature reuses the same card-variant comparison logic used by the add feature.
-- This ensures duplicate detection is consistent with add-merge behaviour.
-- The command is read-only and does not mutate any stored data.
+
+The analytics feature is implemented across three main classes:
+
+* `CardsList` – computes analytics data
+* `CardsAnalytics` – stores computed metrics
+* `Ui` – formats and prints results
+
+Core computation is done in `CardsList.getAnalytics(...)`:
+
+```java
+for (Card card : cards) {
+    totalQuantity += card.getQuantity();
+    totalValue += card.getPrice() * card.getQuantity();
+
+    String normalizedSetName = normalizeSetName(card.getCardSet());
+    setCounts.merge(normalizedSetName, card.getQuantity(), Integer::sum);
+    setValues.merge(normalizedSetName,
+        (double) card.getPrice() * card.getQuantity(),
+        Double::sum);
+}
+```
+
+Additional metrics computed include:
+
+* Top expensive cards (sorted by price)
+* Top cards by total holding value (price × quantity)
+* Cheapest cards (ascending price)
+* Top sets by total quantity
+* Top sets by total value
+* Price distribution across predefined ranges
+* Metadata coverage (notes and set information)
+
+Sorting is performed using Java streams:
+
+```java
+cards.stream()
+    .sorted(Comparator.comparingDouble(Card::getPrice).reversed())
+```
 
 #### Design decisions
-- Reusing existing comparison logic avoids having two definitions of what counts as the “same” card.
-- Making the command read-only means it does not need undo support.
 
-### Find Feature
+* All analytics are computed in a single pass through the card list for efficiency.
+* A dedicated `CardsAnalytics` class is used to encapsulate all computed results.
+* Sorting is applied only to small subsets (e.g. top 3 cards) to reduce overhead.
+* Analytics computation is separated from UI formatting:
 
-The `find` command searches the current list using one or more optional filters.
+    * `CardsList` handles computation
+    * `Ui` handles presentation
+* Cards without a set are excluded from set-based analytics to avoid misleading groupings.
 
-#### Architecture-level
-1. The user enters a `find` command with any combination of supported flags.
-2. `Parser` extracts all provided fields and creates a `FindCommand`.
-3. `CardCollector` executes the command using `CommandContext`.
-4. `FindCommand` filters the active `CardsList`.
-5. Matching cards are displayed by `Ui`.
+#### Alternatives considered
 
-#### Implementation
-- Supported filters include name, quantity, price, metadata fields, notes, and tags.
-- All provided conditions are combined using logical AND.
-- String comparisons are case-insensitive to make search more user-friendly.
-
-#### Design decisions
-- Keeping `find` flag-based makes it consistent with `add` and `edit`.
-- Allowing multiple simultaneous filters reduces the need for repeated commands.
+* Computing analytics directly in `Ui` — rejected as it mixes logic with presentation.
+* Splitting each metric into separate classes — rejected due to unnecessary complexity.
+* Recomputing analytics multiple times — rejected due to inefficiency.
 
 ### Filter Feature
 

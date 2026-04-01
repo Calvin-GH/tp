@@ -1,23 +1,61 @@
 package seedu.cardcollector.card;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class CardsAnalytics {
     private final int distinctCards;
     private final int totalQuantity;
     private final double totalValue;
-    private final ArrayList<CardMetric> mostExpensiveCards;
-    private final ArrayList<SetMetric> topSetsByCount;
 
-    public CardsAnalytics(int distinctCards, int totalQuantity, double totalValue,
-                          List<CardMetric> mostExpensiveCards, List<SetMetric> topSetsByCount) {
+    private final ArrayList<CardMetric> mostExpensiveCards;
+    private final ArrayList<CardMetric> topCardsByHoldingValue;
+    private final ArrayList<CardMetric> cheapestCards;
+
+    private final ArrayList<SetMetric> topSetsByCount;
+    private final ArrayList<SetValueMetric> topSetsByValue;
+
+    private final int zeroPriceCards;
+    private final int lowPriceCards;
+    private final int mediumPriceCards;
+    private final int upperMidPriceCards;
+    private final int highPriceCards;
+
+    private final int cardsWithNotes;
+    private final int cardsWithSetInformation;
+
+    public CardsAnalytics(
+            int distinctCards,
+            int totalQuantity,
+            double totalValue,
+            ArrayList<CardMetric> mostExpensiveCards,
+            ArrayList<CardMetric> topCardsByHoldingValue,
+            ArrayList<CardMetric> cheapestCards,
+            ArrayList<SetMetric> topSetsByCount,
+            ArrayList<SetValueMetric> topSetsByValue,
+            int zeroPriceCards,
+            int lowPriceCards,
+            int mediumPriceCards,
+            int upperMidPriceCards,
+            int highPriceCards,
+            int cardsWithNotes,
+            int cardsWithSetInformation
+    ) {
         this.distinctCards = distinctCards;
         this.totalQuantity = totalQuantity;
         this.totalValue = totalValue;
-        this.mostExpensiveCards = new ArrayList<>(mostExpensiveCards);
-        this.topSetsByCount = new ArrayList<>(topSetsByCount);
+        this.mostExpensiveCards = mostExpensiveCards;
+        this.topCardsByHoldingValue = topCardsByHoldingValue;
+        this.cheapestCards = cheapestCards;
+        this.topSetsByCount = topSetsByCount;
+        this.topSetsByValue = topSetsByValue;
+        this.zeroPriceCards = zeroPriceCards;
+        this.lowPriceCards = lowPriceCards;
+        this.mediumPriceCards = mediumPriceCards;
+        this.upperMidPriceCards = upperMidPriceCards;
+        this.highPriceCards = highPriceCards;
+        this.cardsWithNotes = cardsWithNotes;
+        this.cardsWithSetInformation = cardsWithSetInformation;
     }
 
     public int getDistinctCards() {
@@ -33,11 +71,51 @@ public class CardsAnalytics {
     }
 
     public List<CardMetric> getMostExpensiveCards() {
-        return Collections.unmodifiableList(mostExpensiveCards);
+        return mostExpensiveCards;
+    }
+
+    public List<CardMetric> getTopCardsByHoldingValue() {
+        return topCardsByHoldingValue;
+    }
+
+    public List<CardMetric> getCheapestCards() {
+        return cheapestCards;
     }
 
     public List<SetMetric> getTopSetsByCount() {
-        return Collections.unmodifiableList(topSetsByCount);
+        return topSetsByCount;
+    }
+
+    public List<SetValueMetric> getTopSetsByValue() {
+        return topSetsByValue;
+    }
+
+    public int getZeroPriceCards() {
+        return zeroPriceCards;
+    }
+
+    public int getLowPriceCards() {
+        return lowPriceCards;
+    }
+
+    public int getMediumPriceCards() {
+        return mediumPriceCards;
+    }
+
+    public int getUpperMidPriceCards() {
+        return upperMidPriceCards;
+    }
+
+    public int getHighPriceCards() {
+        return highPriceCards;
+    }
+
+    public int getCardsWithNotes() {
+        return cardsWithNotes;
+    }
+
+    public int getCardsWithSetInformation() {
+        return cardsWithSetInformation;
     }
 
     public static class CardMetric {
@@ -73,6 +151,24 @@ public class CardsAnalytics {
 
         public int getTotalCount() {
             return totalCount;
+        }
+    }
+
+    public static class SetValueMetric {
+        private final String setName;
+        private final double totalValue;
+
+        public SetValueMetric(String setName, double totalValue) {
+            this.setName = setName;
+            this.totalValue = totalValue;
+        }
+
+        public String getSetName() {
+            return setName;
+        }
+
+        public double getTotalValue() {
+            return totalValue;
         }
     }
 }
