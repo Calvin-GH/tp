@@ -47,13 +47,29 @@ public class Parser {
     private static final String FLAG_TAG = "/t";
     private static final String FLAG_HELP = "/h";
     private static final String[] CARD_FIELD_FLAGS = {
-            FLAG_NAME, FLAG_QUANTITY, FLAG_PRICE, FLAG_SET, FLAG_RARITY,
-            FLAG_CONDITION, FLAG_LANGUAGE, FLAG_CARD_NUMBER, FLAG_NOTE, FLAG_TAG
+        FLAG_NAME,
+        FLAG_QUANTITY,
+        FLAG_PRICE,
+        FLAG_SET,
+        FLAG_RARITY,
+        FLAG_CONDITION,
+        FLAG_LANGUAGE,
+        FLAG_CARD_NUMBER,
+        FLAG_NOTE,
+        FLAG_TAG
     };
 
     private static final String[] ADD_FIELD_FLAGS = {
-            FLAG_NAME, FLAG_QUANTITY, FLAG_PRICE, FLAG_SET, FLAG_RARITY,
-            FLAG_CONDITION, FLAG_LANGUAGE, FLAG_CARD_NUMBER, FLAG_NOTE, FLAG_ID
+        FLAG_NAME,
+        FLAG_QUANTITY,
+        FLAG_PRICE,
+        FLAG_SET,
+        FLAG_RARITY,
+        FLAG_CONDITION,
+        FLAG_LANGUAGE,
+        FLAG_CARD_NUMBER,
+        FLAG_NOTE,
+        FLAG_ID
     };
 
     private static final String KEYWORD_ADD_COMMAND = "add";
@@ -98,14 +114,14 @@ public class Parser {
     };
 
     private static final String[] USAGE_FIND_COMMAND = {
-            "find [/n NAME] [/p PRICE] [/q QUANTITY] [/s SET] [/r RARITY] [/c CONDITION] [/l LANGUAGE] "
-                    + "[/no CARD_NUMBER] [/nt NOTE] [/t TAG]",
-            "find /n Pikachu",
-            "find /p 12.5",
-            "find /n Pikachu /q 3",
-            "find /s Base Set /r Rare",
-            "find /nt trade",
-            "find /t trade"
+        "find [/n NAME] [/p PRICE] [/q QUANTITY] [/s SET] [/r RARITY] "
+            + "[/c CONDITION] [/l LANGUAGE] [/no CARD_NUMBER] [/nt NOTE] [/t TAG]",
+        "find /n Pikachu",
+        "find /p 12.5",
+        "find /n Pikachu /q 3",
+        "find /s Base Set /r Rare",
+        "find /nt trade",
+        "find /t trade"
     };
 
     private static final String[] USAGE_ADD_COMMAND = {
@@ -122,7 +138,8 @@ public class Parser {
     };
 
     private static final String[] USAGE_EDIT_COMMAND = {
-        "edit INDEX [/n NAME] [/q QTY] [/p PRICE] [/s SET] [/r RARITY] [/c CONDITION] [/l LANGUAGE] [/no CARD_NUMBER] [/nt NOTE]",
+        "edit INDEX [/n NAME] [/q QTY] [/p PRICE] [/s SET] [/r RARITY] [/c CONDITION] " +
+                "[/l LANGUAGE] [/no CARD_NUMBER] [/nt NOTE]",
         "edit 1 /n Dragonite VMAX",
         "edit 2 /s Jungle /r Rare"
     };

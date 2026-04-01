@@ -576,7 +576,7 @@ public class CardsListTest {
     //@@author
 
     @Test
-    public void findCards_byNote_noMatch_returnsEmptyList() {
+    public void findCards_byNote_noMatch() {
         CardsList cardsList = new CardsList();
 
         cardsList.addCard(new Card.Builder()

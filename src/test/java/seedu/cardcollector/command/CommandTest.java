@@ -3,7 +3,6 @@ package seedu.cardcollector.command;
 import org.junit.jupiter.api.Test;
 import seedu.cardcollector.Ui;
 import seedu.cardcollector.UploadUndoState;
-import seedu.cardcollector.card.CardFieldChange;
 import seedu.cardcollector.card.CardHistoryEntry;
 import seedu.cardcollector.card.CardHistoryType;
 import seedu.cardcollector.card.CardsHistory;
