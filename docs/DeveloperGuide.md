@@ -284,15 +284,17 @@ public void printList(CardsList list) {
 
 ## Appendix: User Stories
 
-| Version | As a ...      | I want to ...                                                                | So that I can ...                                                               |
-|---------|---------------|------------------------------------------------------------------------------|---------------------------------------------------------------------------------|
+| Version | As a ...      | I want to ...                                                               | So that I can ...                                                               |
+|---------|---------------|-----------------------------------------------------------------------------|---------------------------------------------------------------------------------|
 | v1.0    | TCG Collector | add/remove cards to my collection with their details (name, quantity, price) | maintain an accurate digital catalog of all my cards                            |
-| v1.0    | TCG Collector | search for specific cards by name or set using text-based queries            | quickly locate cards in my collection without browsing through physical binders |
-| v1.0    | TCG Collector | organise my cards by different categories (set, rarity, card type)           | browse my collection in a structured way that suits my needs                    |
-| v1.0    | TCG Collector | edit any stored data                                                         | update/correct mistakes when I first add the card                               |
-| v1.0    | TCG Collector | view a chronological list of cards I recently added or removed               | quickly see what’s changed in my collection                                     |
-| v2.0    | TCG Collector | store my cards data even when I close the application                        | use the app without having to input my current cards again                      |
-| v2.0    | TCG Collector | have a wishlist to track what cards I want to get                            | check them off the wishlist once I have them                                    |
+| v1.0    | TCG Collector | search for specific cards by name or set using text-based queries           | quickly locate cards in my collection without browsing through physical binders |
+| v1.0    | TCG Collector | organise my cards by different categories (set, rarity, card type)          | browse my collection in a structured way that suits my needs                    |
+| v1.0    | User          | edit any stored data                                                        | update/correct mistakes when I first add the card                               |
+| v1.0    | TCG Collector | view a chronological list of cards I recently added or removed              | quickly see what’s changed in my collection                                     |
+| v2.0    | User          | store my data even when I close the application                        | use the app without having to input my current cards again                      |
+| v2.0    | TCG Collector | have a wishlist to track what cards I want to get                           | check them off the wishlist once I have them                                    |
+| v2.0    | User          | undo my latest command                                                            | make quick rectification of errors made                                          |
+
 
 ## Appendix: Non-Functional Requirements
 - Should work on any [mainstream OS](#mainstream-os) as long as it has Java 17 or above installed
