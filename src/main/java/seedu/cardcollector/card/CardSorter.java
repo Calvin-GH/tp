@@ -22,15 +22,35 @@ public class CardSorter {
         case PRICE -> {
             return Comparator.comparingDouble(Card::getPrice);
         }
-        case LAST_ADDED -> {
+        case SET -> {
+            return Comparator.comparing(Card::getCardSet,
+                    Comparator.nullsFirst(Comparator.naturalOrder()));
+        }
+        case RARITY -> {
+            return Comparator.comparing(Card::getRarity,
+                    Comparator.nullsFirst(Comparator.naturalOrder()));
+        }
+        case CONDITION -> {
+            return Comparator.comparing(Card::getCondition,
+                    Comparator.nullsFirst(Comparator.naturalOrder()));
+        }
+        case LANGUAGE -> {
+            return Comparator.comparing(Card::getLanguage,
+                    Comparator.nullsFirst(Comparator.naturalOrder()));
+        }
+        case NUMBER -> {
+            return Comparator.comparing(Card::getCardNumber,
+                    Comparator.nullsFirst(Comparator.naturalOrder()));
+        }
+        case ADDED -> {
             return Comparator.comparing(Card::getLastAdded,
                     Comparator.nullsFirst(Instant::compareTo));
         }
-        case LAST_MODIFIED -> {
+        case MODIFIED -> {
             return Comparator.comparing(Card::getLastModified,
                     Comparator.nullsFirst(Instant::compareTo));
         }
-        case LAST_REMOVED -> {
+        case REMOVED -> {
             return Comparator.comparing(Card::getLastRemoved,
                     Comparator.nullsFirst(Instant::compareTo));
         }
