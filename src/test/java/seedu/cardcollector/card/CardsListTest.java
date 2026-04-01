@@ -471,6 +471,7 @@ public class CardsListTest {
                 .price(80.0f)
                 .quantity(1)
                 .cardSet("Base Set")
+                .note("starter")
                 .build());
         cardsList.addCard(new Card.Builder()
                 .name("Pikachu")
@@ -496,13 +497,39 @@ public class CardsListTest {
         assertEquals("Blastoise", analytics.getMostExpensiveCards().get(2).getCard().getName());
         assertEquals(200.0, analytics.getMostExpensiveCards().get(0).getLineValue(), 0.001);
 
-        assertEquals(3, analytics.getTopSetsByCount().size());
+        assertEquals(3, analytics.getTopCardsByHoldingValue().size());
+        assertEquals("Charizard", analytics.getTopCardsByHoldingValue().get(0).getCard().getName());
+        assertEquals(200.0, analytics.getTopCardsByHoldingValue().get(0).getLineValue(), 0.001);
+        assertEquals("Mew", analytics.getTopCardsByHoldingValue().get(1).getCard().getName());
+        assertEquals(90.0, analytics.getTopCardsByHoldingValue().get(1).getLineValue(), 0.001);
+        assertEquals("Blastoise", analytics.getTopCardsByHoldingValue().get(2).getCard().getName());
+        assertEquals(80.0, analytics.getTopCardsByHoldingValue().get(2).getLineValue(), 0.001);
+
+        assertEquals(3, analytics.getCheapestCards().size());
+        assertEquals("Pikachu", analytics.getCheapestCards().get(0).getCard().getName());
+        assertEquals("Blastoise", analytics.getCheapestCards().get(1).getCard().getName());
+        assertEquals("Mew", analytics.getCheapestCards().get(2).getCard().getName());
+
+        assertEquals(2, analytics.getTopSetsByCount().size());
         assertEquals("Jungle", analytics.getTopSetsByCount().get(0).getSetName());
         assertEquals(4, analytics.getTopSetsByCount().get(0).getTotalCount());
         assertEquals("Base Set", analytics.getTopSetsByCount().get(1).getSetName());
         assertEquals(3, analytics.getTopSetsByCount().get(1).getTotalCount());
-        assertEquals("Unspecified Set", analytics.getTopSetsByCount().get(2).getSetName());
-        assertEquals(1, analytics.getTopSetsByCount().get(2).getTotalCount());
+
+        assertEquals(2, analytics.getTopSetsByValue().size());
+        assertEquals("Base Set", analytics.getTopSetsByValue().get(0).getSetName());
+        assertEquals(280.0, analytics.getTopSetsByValue().get(0).getTotalValue(), 0.001);
+        assertEquals("Jungle", analytics.getTopSetsByValue().get(1).getSetName());
+        assertEquals(80.0, analytics.getTopSetsByValue().get(1).getTotalValue(), 0.001);
+
+        assertEquals(0, analytics.getZeroPriceCards());
+        assertEquals(0, analytics.getLowPriceCards());
+        assertEquals(1, analytics.getMediumPriceCards());
+        assertEquals(2, analytics.getUpperMidPriceCards());
+        assertEquals(1, analytics.getHighPriceCards());
+
+        assertEquals(1, analytics.getCardsWithNotes());
+        assertEquals(3, analytics.getCardsWithSetInformation());
     }
 
     @Test
@@ -515,7 +542,19 @@ public class CardsListTest {
         assertEquals(0, analytics.getTotalQuantity());
         assertEquals(0.0, analytics.getTotalValue(), 0.001);
         assertTrue(analytics.getMostExpensiveCards().isEmpty());
+        assertTrue(analytics.getTopCardsByHoldingValue().isEmpty());
+        assertTrue(analytics.getCheapestCards().isEmpty());
         assertTrue(analytics.getTopSetsByCount().isEmpty());
+        assertTrue(analytics.getTopSetsByValue().isEmpty());
+
+        assertEquals(0, analytics.getZeroPriceCards());
+        assertEquals(0, analytics.getLowPriceCards());
+        assertEquals(0, analytics.getMediumPriceCards());
+        assertEquals(0, analytics.getUpperMidPriceCards());
+        assertEquals(0, analytics.getHighPriceCards());
+
+        assertEquals(0, analytics.getCardsWithNotes());
+        assertEquals(0, analytics.getCardsWithSetInformation());
     }
 
     //@@author HX2003
