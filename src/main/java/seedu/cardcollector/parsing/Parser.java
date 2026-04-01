@@ -102,7 +102,9 @@ public class Parser {
     };
 
     private static final String[] USAGE_LIST_COMMAND = {
-        "list [NUMBER | all] [index | quantity | price] [ascending | descending]",
+        "list [NUMBER | all] [index | name | quantity | price |" +
+                " set | rarity | condition | language | number | added | modified | removed] " +
+                "[ascending | descending]",
         "list",
         "list 50 quantity ascending"
     };
@@ -936,10 +938,10 @@ public class Parser {
             criteria = CardSortCriteria.QUANTITY;
             break;
         case "lastadded":
-            criteria = CardSortCriteria.LAST_ADDED;
+            criteria = CardSortCriteria.ADDED;
             break;
         case "lastmodified":
-            criteria = CardSortCriteria.LAST_MODIFIED;
+            criteria = CardSortCriteria.MODIFIED;
             break;
         default:
             throw new ParseInvalidArgumentException(

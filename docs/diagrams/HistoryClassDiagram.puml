@@ -3,17 +3,25 @@
 
 skinparam linetype ortho
 skinparam nodesep 100
-skinparam SameClassWidth true
 hide empty members
 
 class CardsList CARDS_COLOR_PRIMARY
 class \n\nCard\n\n CARDS_COLOR_PRIMARY
 
-CardsList -right--> "         1 "/"history" CardsHistory
+class CardFieldChange {
+    - previous: String
+    - current: String
+}
 
+CardsList -right--> "         1 "/"history" CardsHistory
 CardsHistory -right-> "          0..*"/"historyList" \n\nCardHistoryEntry\n\n
 
+
+\n\nCardHistoryEntry\n\n -right--> "0..1      "/"current" \n\nCard\n\n : ""
+\n\nCardHistoryEntry\n\n -right--> "0..1      "/previous \n\nCard\n\n : ""
+
 \n\nCardHistoryEntry\n\n --> "1  "/"  cardHistoryType" CardHistoryType
+\n\nCardHistoryEntry\n\n ..> CardFieldChange
 
 enum CardHistoryType <<enumeration>> {
     ADDED
@@ -22,7 +30,6 @@ enum CardHistoryType <<enumeration>> {
     ENTIRE
 }
 
-\n\nCardHistoryEntry\n\n -right--> "0..1      "/"current" \n\nCard\n\n : ""
-\n\nCardHistoryEntry\n\n -right--> "0..1      "/previous \n\nCard\n\n : ""
+
 }
 @enduml

@@ -111,7 +111,7 @@ public class CardSorterTest {
         cards.add(newestCard);
 
         ArrayList<Card> resultsDescending = CardSorter.sort(
-                cards, CardSortCriteria.LAST_REMOVED, -1, Integer.MAX_VALUE, true);
+                cards, CardSortCriteria.REMOVED, -1, Integer.MAX_VALUE, true);
 
         assertEquals(newestCard, resultsDescending.get(0));
         assertEquals(olderCard, resultsDescending.get(1));

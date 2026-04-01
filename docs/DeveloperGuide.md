@@ -17,27 +17,28 @@
         - [Implementation](#implementation-key-code-snippets-2)
         - [Sequence Diagram](#sequence-diagram)
     - [List Feature](#list-feature)
+        - [Architecture-level](#architecture-level-3)
         - [Implementation](#implementation-1)
         - [Design decisions](#design-decisions)
     - [Duplicates Feature](#duplicates-feature)
-        - [Architecture-level](#architecture-level-3)
+        - [Architecture-level](#architecture-level-4)
         - [Implementation](#implementation-2)
         - [Design decisions](#design-decisions-1)
     - [Find Feature](#find-feature)
-        - [Architecture-level](#architecture-level-4)
+        - [Architecture-level](#architecture-level-5)
         - [Implementation](#implementation-3)
         - [Design decisions](#design-decisions-2)
     - [Filter Feature](#filter-feature)
-        - [Architecture-level](#architecture-level-5)
+        - [Architecture-level](#architecture-level-6)
         - [Implementation](#implementation-4)
         - [Design decisions](#design-decisions-3)
     - [Tag Feature](#tag-feature)
-        - [Architecture-level](#architecture-level-6)
+        - [Architecture-level](#architecture-level-7)
         - [Implementation](#implementation-5)
         - [Design decisions](#design-decisions-4)
     - [History Feature](#history-feature)
     - [Wishlist Feature](#wishlist-feature)
-        - [Architecture-level](#architecture-level-7)
+        - [Architecture-level](#architecture-level-8)
         - [Implementation](#implementation-key-code-snippets-3)
         - [Class Diagram](#class-diagram-2)
         - [Sequence Diagram](#sequence-diagram-wishlist-add-example)
@@ -116,21 +117,6 @@ private static boolean isSameCardVariant(Card first, Card second) {
 
 #### Class Diagram
 <img src="images/AddCommandClassDiagram.svg" width="900" />
-
-### History Feature
-The history feature is a log of when cards were added, modified, or removed.
-It is not intended to represent command history, but rather a changelog of the cards in the inventory.
-
-#### History Command
-The `history` command displays the historical log that were generated when other commands were executed.
-As such, this command itself does not change or mutate any data.
-
-To model the interactions that occur when the user issues the command `history all added`, below is a *Sequence Diagram* to illustrate it.
-Some details related to UI input handling have been omitted for brevity.
-
-<img src="images/HistorySequenceDiagram.svg" width="550" />
-
-**Note:** The lifeline for `HistoryCommand` actually ends at the destroy marker (X), but due to a limitation in PlantUML, the dotted lifeline continues downwards.
 
 ### Edit Feature
 
@@ -329,16 +315,108 @@ If the `lastCommand` was an:
 
 This feature displays cards in the current list in a sorted order.
 
+#### Architecuture-level
+
+When the user types `list 50 quantity descending`:
+1. `Ui` reads the raw input.
+2. `CardCollector` passes the input to `Parser`.
+3. `Parser` creates an `ListCommand` object.
+4. `CardCollector` creates a `CommandContext` and calls `execute(context)` on the command, passing the correct `CardsList`.
+5. The `Arraylist` of cards is obtained via `getCards()`, which is then passed to `CardSorter.sort(...)`.
+6. `CardSorter` creates a copy of the `Arraylist`, then internally calls `getSortComparator(criteria)`,
+   and then uses this comparator for sorting and then limits the number of records to the appropriate length.
+7. `Ui` shows the sorted list.
+
 #### Implementation
 - Users can specify how many cards to display, the sort field, and the sort direction.
 - If no arguments are provided, cards are listed by index in ascending order.
 
 #### Design decisions
-- Fuzzy argument matching allows faster typing for experienced CLI users.
+- Fuzzy argument matching using the [Disambiguator](#disambiguator) allows faster typing for experienced CLI users.
 - Sorting is kept read-only so listing never mutates stored card data.
 
-#### List Command
-The parsing of this command uses the [Disambiguator](#disambiguator) to support fuzzy arguments.
+#### Card sorting classes
+
+<img src="images/CardSorterClassDiagram.svg" width="350" />
+
+### Duplicates Feature
+
+The `duplicates` command displays cards in the current list that appear to be duplicates.
+
+#### Architecture-level
+1. `Parser` creates a `DuplicatesCommand`.
+2. `CardCollector` creates a `CommandContext` and executes the command.
+3. `DuplicatesCommand` retrieves duplicate cards from the active `CardsList`.
+4. `Ui` prints the duplicate subset.
+
+#### Implementation
+- The feature reuses the same card-variant comparison logic used by the add feature.
+- This ensures duplicate detection is consistent with add-merge behaviour.
+- The command is read-only and does not mutate any stored data.
+
+#### Design decisions
+- Reusing existing comparison logic avoids having two definitions of what counts as the “same” card.
+- Making the command read-only means it does not need undo support.
+
+### Find Feature
+
+The `find` command searches the current list using one or more optional filters.
+
+#### Architecture-level
+1. The user enters a `find` command with any combination of supported flags.
+2. `Parser` extracts all provided fields and creates a `FindCommand`.
+3. `CardCollector` executes the command using `CommandContext`.
+4. `FindCommand` filters the active `CardsList`.
+5. Matching cards are displayed by `Ui`.
+
+#### Implementation
+- Supported filters include name, quantity, price, metadata fields, notes, and tags.
+- All provided conditions are combined using logical AND.
+- String comparisons are case-insensitive to make search more user-friendly.
+
+#### Design decisions
+- Keeping `find` flag-based makes it consistent with `add` and `edit`.
+- Allowing multiple simultaneous filters reduces the need for repeated commands.
+
+### Filter Feature
+
+The `filter` command displays cards filtered by tag.
+
+#### Architecture-level
+1. `Parser` checks whether the command includes `/t TAG`.
+2. If a tag is provided, a tagged filter command is created.
+3. Otherwise, a no-argument filter command is created.
+4. The command is executed on the active `CardsList`.
+5. `Ui` displays the resulting list.
+
+#### Implementation
+- `filter /t TAG` returns only cards that contain the specified tag.
+- `filter` with no tag displays the full list without applying a tag filter.
+- Tag comparison is case-insensitive.
+
+#### Design decisions
+- `filter` is kept separate from `find` because tag filtering is common and deserves a faster workflow.
+- The command is read-only and therefore does not participate in undo.
+
+### Tag Feature
+
+The `tag` command adds or removes labels from a card.
+
+#### Architecture-level
+1. `Parser` detects whether the operation is `tag add` or `tag remove`.
+2. It extracts the target index and tag value.
+3. A `TagCommand` is created.
+4. `CardCollector` executes it through `CommandContext`.
+5. The card is updated and the resulting list is printed.
+
+#### Implementation
+- Tags are stored as part of the `Card`.
+- The same feature also supports the alias command `folder`.
+- Tag mutations create history entries because they modify card state.
+
+#### Design decisions
+- Tags provide lightweight organisation without needing a more complex categorisation model.
+- Tag changes are reversible, so `undo` can restore the previous state.
 
 ### Duplicates Feature
 
@@ -432,6 +510,9 @@ therefore `undo` command does not revert the history, but rather adds to the his
   - A `MODIFIED` entry occurs when a card value is changed, **excluding** any changes to the quantity of the card.
   - A `REMOVED` entry occurs when a card is removed, or when the edit command decreases the quantity of the card.
 
+  The `ENTIRE` value is a special enum constant used **only for filtering operations**. It is never assigned to individual history entries;
+  instead, it is only used to instruct the system to display entries from all 3 categories when listing history.
+
 #### Architecture flow
 Whenever an `add`, `edit`, `remove*`, `tag` or any other command that changes the inventory is executed
 1. A new `CardHistoryEntry` is created. It stores the previous version of the card before any changes (if any), and
@@ -442,7 +523,8 @@ Whenever an `add`, `edit`, `remove*`, `tag` or any other command that changes th
 
 #### Alternatives considered
 - A more compact way to store the history, is to track what changed instead of storing two copies of the card.
-  While this solution is space-saving, it increases the complexity of decoding and encoding of the history state.
+  While this alternative solution is space-saving, it increases the complexity of decoding and encoding of the history state,
+  which was why it was not adopted.
 
 
 #### History Command

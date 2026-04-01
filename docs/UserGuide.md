@@ -82,7 +82,7 @@ Permanently reorders the stored cards in your inventory or wishlist by the chose
 
 Displays all cards in the current list in a sorted order.
 
-**Format:** `list [NUMBER | all] [index | quantity | price] [ascending | descending]`
+**Format:** `list [NUMBER | all] [index | name | quantity | price | set | rarity | condition | language | number | added | modified | removed] [ascending | descending]`
 
 **Examples:**
 `list`
@@ -92,6 +92,10 @@ Displays all cards in the current list in a sorted order.
 - By default, the displayed list is sorted by index in ascending order.
 - Arguments are optional, but if specified, they must be in order.
 - Argument matching is intentionally fuzzy for fast usage.
+- With the exception of quantity and price, all other properties are treated as strings and thus are sorted in lexicographical order.
+  - This includes `rarity` and `condition`, as they do not have any predefined order.
+  - This includes card `number` (not to be confused with `index` or `quantity`. 
+
 
 ### Filtering cards: `filter`
 
