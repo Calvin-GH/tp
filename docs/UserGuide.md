@@ -139,18 +139,21 @@ set insights, price distribution, and metadata coverage.
 
 ### Finding cards: `find`
 
-Searches the current list by name, price, quantity, optional metadata, note, tag/folder, or any combination of them.
+**Format:**  
+`find [/n NAME] [/p PRICE] [/q QUANTITY] [/s SET] [/r RARITY] [/c CONDITION] [/l LANGUAGE] [/no CARD_NUMBER] [/nt NOTE] [/t TAG]`
 
-**Format:** `find [/n NAME] [/p PRICE] [/q QUANTITY] [/s SET] [/r RARITY] [/c CONDITION] [/l LANGUAGE] 
-[/no CARD_NUMBER] [/nt NOTE] [/t TAG]`
+- `/p` and `/q` support **range operators**: `>`, `>=`, `<`, `<=`, or exact value.
+- All other fields are **substring** (case-insensitive) matches.
+- You can combine any number of flags.
 
 **Examples:**
-`find /n pika`
-`find /p 5.99`
-`find /n charizard /q 2`
-`find /s Base Set /r Rare`
-`find /t trade`
-`find /nt from trader jin`
+- `find /n charizard`
+- `find /q 5` (exact quantity)
+- `find /q >30`
+- `find /p <3.0`
+- `find /q >=5 /p <=10.5`
+- `find /n pikachu /q >10 /p <1.5`
+- `find /s "Base Set" /r rare`
 
 ### Tagging a card: `tag` or `folder`
 
@@ -233,6 +236,25 @@ Moves a card from the wishlist to your main inventory (and removes it from the w
 **Example:**
 `wishlist acquired 3`
 
+### clear
+
+Clears **all** cards from the current list (inventory or wishlist).  
+The action is **reversible** with `undo`.
+
+**Format:**  
+`clear`
+
+**Alternative (explicit):**  
+`wishlist clear`
+
+**Examples:**
+- `clear`
+- `wishlist clear`
+
+**Note:**
+- This permanently deletes everything in the list **until** you type `undo`.
+- The other list (inventory ↔ wishlist) is unaffected.
+
 ### Downloading a storage snapshot: `download`
 
 Exports the current full app state, including inventory and wishlist, to a file path of your choice.
@@ -294,4 +316,5 @@ Exits the application.
 | `history [...]`                | View history                         |
 | `wishlist <command>`           | Use wishlist                         |
 | `find [...]`                   | Search cards                         |
+| `clear`                        | Remove all cards                     |
 | `bye`                          | Exit app                             |
