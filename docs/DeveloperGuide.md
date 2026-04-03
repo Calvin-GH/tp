@@ -613,7 +613,11 @@ public void printList(CardsList list) {
 During parsing, users may occasionally enter invalid inputs.
 To handle this reliably, 3 fine-grained exceptions  `ParseBlankCommandException`,
 `ParseUnknownCommandException`, and `ParseInvalidArgumentException` which all inherits from `ParseException` are defined.
-This ensures traceability, providing users with clear context about the issue, and suggests the proper usage whenever possible.
+This ensures traceability, providing users with clear context about the issue.
+
+In particular, for `ParseInvalidArgumentException` which is only thrown when the command is known, but the arguments are invalid,
+an additional list of strings `usages` can be supplied to suggest the proper usage.
+The first string is usually the usage format, while strings onwards are example usages.
 
 #### Class Diagram
 <img src="images/ParserExceptionsClassDiagram.svg" width="800"/>

@@ -76,7 +76,7 @@ public class CardCollector {
             } catch (ParseUnknownCommandException e) {
                 ui.printUnknownCommandWarning(e.getMessage());
             } catch (ParseInvalidArgumentException e) {
-                ui.printInvalidArgumentWarning(e.getMessage(), e.getUsage());
+                ui.printInvalidArgumentWarning(e.getMessage(), e.getUsages());
             }
         }
     }

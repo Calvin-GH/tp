@@ -6,6 +6,7 @@ skinparam nodesep 100
 class Exception {
     - message: String
     + Exception(message: String)
+    + getMessage(): String
 }
 
 class ParseException {
@@ -21,8 +22,9 @@ class ParseUnknownCommandException {
 }
 
 class ParseInvalidArgumentException {
-    - usage: String[]
-    + ParseInvalidArgumentException(message: String, usage: String[])
+    - usages: String[]
+    + ParseInvalidArgumentException(message: String, usages: String[])
+    + getUsages(): String[]
 }
 
 Exception <|-- ParseException
